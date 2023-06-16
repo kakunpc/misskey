@@ -105,6 +105,7 @@ import XWidgetsColumn from '@/ui/deck/widgets-column.vue';
 import XMentionsColumn from '@/ui/deck/mentions-column.vue';
 import XDirectColumn from '@/ui/deck/direct-column.vue';
 import XRoleTimelineColumn from '@/ui/deck/role-timeline-column.vue';
+import XOtherServerLocalTimeline from '@/ui/deck/other-server-localtimeline-column.vue';
 const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));
 
 const columnComponents = {
@@ -118,6 +119,7 @@ const columnComponents = {
 	mentions: XMentionsColumn,
 	direct: XDirectColumn,
 	roleTimeline: XRoleTimelineColumn,
+	otherServerLocalTimeline: XOtherServerLocalTimeline
 };
 
 mainRouter.navHook = (path, flag): boolean => {
