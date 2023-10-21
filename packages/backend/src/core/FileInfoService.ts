@@ -1,8 +1,12 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import * as fs from 'node:fs';
 import * as crypto from 'node:crypto';
 import { join } from 'node:path';
-import * as stream from 'node:stream';
-import * as util from 'node:util';
+import * as stream from 'node:stream/promises';
 import { Injectable } from '@nestjs/common';
 import { FSWatcher } from 'chokidar';
 import * as fileType from 'file-type';
@@ -16,8 +20,6 @@ import { createTempDir } from '@/misc/create-temp.js';
 import { AiService } from '@/core/AiService.js';
 import { bindThis } from '@/decorators.js';
 import { ImageProcessingService } from '@/core/ImageProcessingService.js';
-
-const pipeline = util.promisify(stream.pipeline);
 
 export type FileInfo = {
 	size: number;
@@ -164,20 +166,20 @@ export class FileInfoService {
 	private async detectSensitivity(source: string, mime: string, sensitiveThreshold: number, sensitiveThresholdForPorn: number, analyzeVideo: boolean): Promise<[sensitive: boolean, porn: boolean]> {
 		let sensitive = false;
 		let porn = false;
-	
+
 		function judgePrediction(result: readonly predictionType[]): [sensitive: boolean, porn: boolean] {
 			let sensitive = false;
 			let porn = false;
-	
+
 			if ((result.find(x => x.className === 'Sexy')?.probability ?? 0) > sensitiveThreshold) sensitive = true;
 			if ((result.find(x => x.className === 'Hentai')?.probability ?? 0) > sensitiveThreshold) sensitive = true;
 			if ((result.find(x => x.className === 'Porn')?.probability ?? 0) > sensitiveThreshold) sensitive = true;
-	
+
 			if ((result.find(x => x.className === 'Porn')?.probability ?? 0) > sensitiveThresholdForPorn) porn = true;
-	
+
 			return [sensitive, porn];
 		}
-	
+
 		if ([
 			'image/jpeg',
 			'image/png',
@@ -270,10 +272,10 @@ export class FileInfoService {
 				disposeOutDir();
 			}
 		}
-	
+
 		return [sensitive, porn];
 	}
-	
+
 	private async *asyncIterateFrames(cwd: string, command: FFmpeg.FfmpegCommand): AsyncGenerator<string, void> {
 		const watcher = new FSWatcher({
 			cwd,
@@ -312,7 +314,7 @@ export class FileInfoService {
 			}
 		}
 	}
-	
+
 	@bindThis
 	private exists(path: string): Promise<boolean> {
 		return fs.promises.access(path).then(() => true, () => false);
@@ -321,11 +323,11 @@ export class FileInfoService {
 	@bindThis
 	public fixMime(mime: string | fileType.MimeType): string {
 		// see https://github.com/misskey-dev/misskey/pull/10686
-		if (mime === "audio/x-flac") {
-			return "audio/flac";
+		if (mime === 'audio/x-flac') {
+			return 'audio/flac';
 		}
-		if (mime === "audio/vnd.wave") {
-			return "audio/wav";
+		if (mime === 'audio/vnd.wave') {
+			return 'audio/wav';
 		}
 
 		return mime;
@@ -372,11 +374,12 @@ export class FileInfoService {
 	 * Check the file is SVG or not
 	 */
 	@bindThis
-	public async checkSvg(path: string) {
+	public async checkSvg(path: string): Promise<boolean> {
 		try {
 			const size = await this.getFileSize(path);
 			if (size > 1 * 1024 * 1024) return false;
-			return isSvg(fs.readFileSync(path));
+			const buffer = await fs.promises.readFile(path);
+			return isSvg(buffer.toString());
 		} catch {
 			return false;
 		}
@@ -387,8 +390,7 @@ export class FileInfoService {
 	 */
 	@bindThis
 	public async getFileSize(path: string): Promise<number> {
-		const getStat = util.promisify(fs.stat);
-		return (await getStat(path)).size;
+		return (await fs.promises.stat(path)).size;
 	}
 
 	/**
@@ -397,7 +399,7 @@ export class FileInfoService {
 	@bindThis
 	private async calcHash(path: string): Promise<string> {
 		const hash = crypto.createHash('md5').setEncoding('hex');
-		await pipeline(fs.createReadStream(path), hash);
+		await stream.pipeline(fs.createReadStream(path), hash);
 		return hash.read();
 	}
 

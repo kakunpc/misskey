@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 <template>
 <MkNotes ref="tlComponent" 
 	:no-gap="!defaultStore.state.showGapBetweenNotesInTimeline" 
@@ -14,14 +19,13 @@
 <script lang="ts" setup>
 import { computed, provide, onUnmounted } from 'vue';
 import MkNotes from '@/components/MkNotes.vue';
-import { useStream } from '@/stream';
-import * as sound from '@/scripts/sound';
-import { $i } from '@/account';
-import { defaultStore } from '@/store';
-import { defined } from 'chart.js/dist/helpers/helpers.core';
-import { Stream } from 'misskey-js';
+import { useStream } from '@/stream.js';
+import * as sound from '@/scripts/sound.js';
+import { $i } from '@/account.js';
+import { instance } from '@/instance.js';
+import { defaultStore } from '@/store.js';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	src: string;
 	list?: string;
 	antenna?: string;
@@ -31,7 +35,14 @@ const props = defineProps<{
 	sound?: boolean;
 	emojis?: any;
 	meta?: any;
-}>();
+	withRenotes?: boolean;
+	withReplies?: boolean;
+	onlyFiles?: boolean;
+}>(), {
+	withRenotes: true,
+	withReplies: false,
+	onlyFiles: false,
+});
 
 const emit = defineEmits<{
 	(ev: 'note'): void;
@@ -42,7 +53,15 @@ provide('inChannel', computed(() => props.src === 'channel'));
 
 const tlComponent: InstanceType<typeof MkNotes> = $ref();
 
+let tlNotesCount = 0;
+
 const prepend = note => {
+	tlNotesCount++;
+
+	if (instance.notesPerOneAd > 0 && tlNotesCount % instance.notesPerOneAd === 0) {
+		note._shouldInsertAd_ = true;
+	}
+
 	tlComponent.pagingComponent?.prepend(note);
 
 	emit('note');
@@ -50,14 +69,6 @@ const prepend = note => {
 	if (props.sound) {
 		sound.play($i && (note.userId === $i.id) ? 'noteMy' : 'note');
 	}
-};
-
-const onUserAdded = () => {
-	tlComponent.pagingComponent?.reload();
-};
-
-const onUserRemoved = () => {
-	tlComponent.pagingComponent?.reload();
 };
 
 let endpoint;
@@ -82,10 +93,12 @@ if (props.src === 'antenna') {
 } else if (props.src === 'home') {
 	endpoint = 'notes/timeline';
 	query = {
-		withReplies: defaultStore.state.showTimelineReplies,
+		withRenotes: props.withRenotes,
+		withFiles: props.onlyFiles ? true : undefined,
 	};
 	connection = stream.useChannel('homeTimeline', {
-		withReplies: defaultStore.state.showTimelineReplies,
+		withRenotes: props.withRenotes,
+		withFiles: props.onlyFiles ? true : undefined,
 	});
 	connection.on('note', prepend);
 
@@ -93,28 +106,38 @@ if (props.src === 'antenna') {
 } else if (props.src === 'local') {
 	endpoint = 'notes/local-timeline';
 	query = {
-		withReplies: defaultStore.state.showTimelineReplies,
+		withRenotes: props.withRenotes,
+		withReplies: props.withReplies,
+		withFiles: props.onlyFiles ? true : undefined,
 	};
 	connection = stream.useChannel('localTimeline', {
-		withReplies: defaultStore.state.showTimelineReplies,
+		withRenotes: props.withRenotes,
+		withReplies: props.withReplies,
+		withFiles: props.onlyFiles ? true : undefined,
 	});
 	connection.on('note', prepend);
 } else if (props.src === 'social') {
 	endpoint = 'notes/hybrid-timeline';
 	query = {
-		withReplies: defaultStore.state.showTimelineReplies,
+		withRenotes: props.withRenotes,
+		withReplies: props.withReplies,
+		withFiles: props.onlyFiles ? true : undefined,
 	};
 	connection = stream.useChannel('hybridTimeline', {
-		withReplies: defaultStore.state.showTimelineReplies,
+		withRenotes: props.withRenotes,
+		withReplies: props.withReplies,
+		withFiles: props.onlyFiles ? true : undefined,
 	});
 	connection.on('note', prepend);
 } else if (props.src === 'global') {
 	endpoint = 'notes/global-timeline';
 	query = {
-		withReplies: defaultStore.state.showTimelineReplies,
+		withRenotes: props.withRenotes,
+		withFiles: props.onlyFiles ? true : undefined,
 	};
 	connection = stream.useChannel('globalTimeline', {
-		withReplies: defaultStore.state.showTimelineReplies,
+		withRenotes: props.withRenotes,
+		withFiles: props.onlyFiles ? true : undefined,
 	});
 	connection.on('note', prepend);
 } else if (props.src === 'mentions') {
@@ -136,14 +159,14 @@ if (props.src === 'antenna') {
 } else if (props.src === 'list') {
 	endpoint = 'notes/user-list-timeline';
 	query = {
+		withFiles: props.onlyFiles ? true : undefined,
 		listId: props.list,
 	};
 	connection = stream.useChannel('userList', {
+		withFiles: props.onlyFiles ? true : undefined,
 		listId: props.list,
 	});
 	connection.on('note', prepend);
-	connection.on('userAdded', onUserAdded);
-	connection.on('userRemoved', onUserRemoved);
 } else if (props.src === 'channel') {
 	endpoint = 'channels/timeline';
 	query = {
