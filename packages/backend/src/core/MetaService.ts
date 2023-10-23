@@ -120,13 +120,8 @@ export class MetaService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public dispose(): void {
+	public onApplicationShutdown(signal?: string | undefined) {
 		clearInterval(this.intervalId);
 		this.redisForSub.off('message', this.onMessage);
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }

@@ -1,10 +1,10 @@
 <template>
 <Transition
-	:enterActiveClass="defaultStore.state.animation ? $style.transition_tooltip_enterActive : ''"
-	:leaveActiveClass="defaultStore.state.animation ? $style.transition_tooltip_leaveActive : ''"
-	:enterFromClass="defaultStore.state.animation ? $style.transition_tooltip_enterFrom : ''"
-	:leaveToClass="defaultStore.state.animation ? $style.transition_tooltip_leaveTo : ''"
-	appear @afterLeave="emit('closed')"
+	:enter-active-class="defaultStore.state.animation ? $style.transition_tooltip_enterActive : ''"
+	:leave-active-class="defaultStore.state.animation ? $style.transition_tooltip_leaveActive : ''"
+	:enter-from-class="defaultStore.state.animation ? $style.transition_tooltip_enterFrom : ''"
+	:leave-to-class="defaultStore.state.animation ? $style.transition_tooltip_leaveTo : ''"
+	appear @after-leave="emit('closed')"
 >
 	<div v-show="showing" ref="el" :class="$style.root" class="_acrylic _shadow" :style="{ zIndex, maxWidth: maxWidth + 'px' }">
 		<slot>
@@ -41,9 +41,6 @@ const emit = defineEmits<{
 	(ev: 'closed'): void;
 }>();
 
-// タイミングによっては最初から showing = false な場合があり、その場合に closed 扱いにしないと永久にDOMに残ることになる
-if (!props.showing) emit('closed');
-
 const el = shallowRef<HTMLElement>();
 const zIndex = os.claimZIndex('high');
 
@@ -69,8 +66,10 @@ onMounted(() => {
 		setPosition();
 
 		const loop = () => {
-			setPosition();
-			loopHandler = window.requestAnimationFrame(loop);
+			loopHandler = window.requestAnimationFrame(() => {
+				setPosition();
+				loop();
+			});
 		};
 
 		loop();

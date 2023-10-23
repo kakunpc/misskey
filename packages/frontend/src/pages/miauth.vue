@@ -1,7 +1,7 @@
 <template>
 <MkStickyContainer>
 	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="800">
+	<MkSpacer :content-max="800">
 		<div v-if="$i">
 			<div v-if="state == 'waiting'">
 				<MkLoading/>

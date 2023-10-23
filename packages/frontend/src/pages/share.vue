@@ -1,25 +1,22 @@
 <template>
 <MkStickyContainer>
 	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="800">
+	<MkSpacer :content-max="800">
 		<MkPostForm
 			v-if="state === 'writing'"
 			fixed
 			:instant="true"
-			:initialText="initialText"
-			:initialVisibility="visibility"
-			:initialFiles="files"
-			:initialLocalOnly="localOnly"
+			:initial-text="initialText"
+			:initial-visibility="visibility"
+			:initial-files="files"
+			:initial-local-only="localOnly"
 			:reply="reply"
 			:renote="renote"
-			:initialVisibleUsers="visibleUsers"
+			:initial-visible-users="visibleUsers"
 			class="_panel"
 			@posted="state = 'posted'"
 		/>
-		<div v-else-if="state === 'posted'" class="_buttonsCenter">
-			<MkButton primary @click="close">{{ i18n.ts.close }}</MkButton>
-			<MkButton @click="goToMisskey">{{ i18n.ts.goToMisskey }}</MkButton>
-		</div>
+		<MkButton v-else-if="state === 'posted'" primary class="close" @click="close()">{{ i18n.ts.close }}</MkButton>
 	</MkSpacer>
 </MkStickyContainer>
 </template>
@@ -151,12 +148,8 @@ function close(): void {
 
 	// 閉じなければ100ms後タイムラインに
 	window.setTimeout(() => {
-		location.href = '/';
+		mainRouter.push('/');
 	}, 100);
-}
-
-function goToMisskey(): void {
-	location.href = '/';
 }
 
 const headerActions = $computed(() => []);
@@ -168,3 +161,9 @@ definePageMetadata({
 	icon: 'ti ti-share',
 });
 </script>
+
+<style lang="scss" scoped>
+.close {
+	margin: 16px auto;
+}
+</style>

@@ -61,7 +61,7 @@ export default defineComponent({
 	},
 
 	setup(props, { slots, expose }) {
-		const $style = useCssModule(); // カスタムレンダラなので使っても大丈夫
+		const $style = useCssModule();
 		function getDateText(time: string) {
 			const date = new Date(time).getDate();
 			const month = new Date(time).getMonth() + 1;

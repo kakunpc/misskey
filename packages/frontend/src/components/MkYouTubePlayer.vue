@@ -1,5 +1,5 @@
 <template>
-<MkWindow :initialWidth="640" :initialHeight="402" :canResize="true" :closeButton="true">
+<MkWindow :initial-width="640" :initial-height="402" :can-resize="true" :close-button="true">
 	<template #header>
 		<i class="icon ti ti-brand-youtube" style="margin-right: 0.5em;"></i>
 		<span>{{ title ?? 'YouTube' }}</span>

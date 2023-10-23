@@ -1,31 +1,25 @@
 <template>
-<MkContainer :naked="widgetProps.transparent" :showHeader="false" data-cy-mkw-clock>
-	<div
-		:class="[$style.root, {
-			[$style.small]: widgetProps.size === 'small',
-			[$style.medium]: widgetProps.size === 'medium',
-			[$style.large]: widgetProps.size === 'large',
-		}]"
-	>
-		<div v-if="widgetProps.label === 'tz' || widgetProps.label === 'timeAndTz'" class="_monospace" :class="[$style.label, $style.a]">{{ tzAbbrev }}</div>
+<MkContainer :naked="widgetProps.transparent" :show-header="false" data-cy-mkw-clock class="mkw-clock">
+	<div class="vubelbmv" :class="widgetProps.size">
+		<div v-if="widgetProps.label === 'tz' || widgetProps.label === 'timeAndTz'" class="_monospace label a abbrev">{{ tzAbbrev }}</div>
 		<MkAnalogClock
-			:class="$style.clock"
+			class="clock"
 			:thickness="widgetProps.thickness"
 			:offset="tzOffset"
 			:graduations="widgetProps.graduations"
-			:fadeGraduations="widgetProps.fadeGraduations"
+			:fade-graduations="widgetProps.fadeGraduations"
 			:twentyfour="widgetProps.twentyFour"
-			:sAnimation="widgetProps.sAnimation"
+			:s-animation="widgetProps.sAnimation"
 		/>
-		<MkDigitalClock v-if="widgetProps.label === 'time' || widgetProps.label === 'timeAndTz'" :class="[$style.label, $style.c]" class="_monospace" :showS="false" :offset="tzOffset"/>
-		<div v-if="widgetProps.label === 'tz' || widgetProps.label === 'timeAndTz'" class="_monospace" :class="[$style.label, $style.d]">{{ tzOffsetLabel }}</div>
+		<MkDigitalClock v-if="widgetProps.label === 'time' || widgetProps.label === 'timeAndTz'" class="_monospace label c time" :show-s="false" :offset="tzOffset"/>
+		<div v-if="widgetProps.label === 'tz' || widgetProps.label === 'timeAndTz'" class="_monospace label d offset">{{ tzOffsetLabel }}</div>
 	</div>
 </MkContainer>
 </template>
 
 <script lang="ts" setup>
 import { } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget';
+import { useWidgetPropsManager, Widget, WidgetComponentExpose } from './widget';
 import { GetFormResultType } from '@/scripts/form';
 import MkContainer from '@/components/MkContainer.vue';
 import MkAnalogClock from '@/components/MkAnalogClock.vue';
@@ -120,8 +114,11 @@ const widgetPropsDef = {
 
 type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 
-const props = defineProps<WidgetComponentProps<WidgetProps>>();
-const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
+// 現時点ではvueの制限によりimportしたtypeをジェネリックに渡せない
+//const props = defineProps<WidgetComponentProps<WidgetProps>>();
+//const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
+const props = defineProps<{ widget?: Widget<WidgetProps>; }>();
+const emit = defineEmits<{ (ev: 'updateProps', props: WidgetProps); }>();
 
 const { widgetProps, configure } = useWidgetPropsManager(name,
 	widgetPropsDef,
@@ -146,9 +143,38 @@ defineExpose<WidgetComponentExpose>({
 });
 </script>
 
-<style lang="scss" module>
-.root {
+<style lang="scss" scoped>
+.vubelbmv {
 	position: relative;
+
+	> .label {
+		position: absolute;
+		opacity: 0.7;
+
+		&.a {
+			top: 14px;
+			left: 14px;
+		}
+
+		&.b {
+			top: 14px;
+			right: 14px;
+		}
+
+		&.c {
+			bottom: 14px;
+			left: 14px;
+		}
+
+		&.d {
+			bottom: 14px;
+			right: 14px;
+		}
+	}
+
+	> .clock {
+		margin: auto;
+	}
 
 	&.small {
 		padding: 12px;
@@ -173,34 +199,5 @@ defineExpose<WidgetComponentExpose>({
 			height: 200px;
 		}
 	}
-}
-
-.label {
-	position: absolute;
-	opacity: 0.7;
-
-	&.a {
-		top: 14px;
-		left: 14px;
-	}
-
-	&.b {
-		top: 14px;
-		right: 14px;
-	}
-
-	&.c {
-		bottom: 14px;
-		left: 14px;
-	}
-
-	&.d {
-		bottom: 14px;
-		right: 14px;
-	}
-}
-
-.clock {
-	margin: auto;
 }
 </style>

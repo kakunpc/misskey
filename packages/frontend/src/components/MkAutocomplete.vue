@@ -10,7 +10,7 @@
 		</li>
 		<li tabindex="-1" :class="$style.item" @click="chooseUser()" @keydown="onKeydown">{{ i18n.ts.selectUser }}</li>
 	</ol>
-	<ol v-else-if="hashtags.length > 0" ref="suggests" :class="$style.list">
+	<ol v-else-if="hashtags.length > 0" ref="suggests" :class="[$style.list, $style.hashtags]">
 		<li v-for="hashtag in hashtags" tabindex="-1" :class="$style.item" @click="complete(type, hashtag)" @keydown="onKeydown">
 			<span class="name">{{ hashtag }}</span>
 		</li>
@@ -42,7 +42,7 @@ import { acct } from '@/filters/user';
 import * as os from '@/os';
 import { MFM_TAGS } from '@/scripts/mfm-tags';
 import { defaultStore } from '@/store';
-import { emojilist, getEmojiName } from '@/scripts/emojilist';
+import { emojilist } from '@/scripts/emojilist';
 import { i18n } from '@/i18n';
 import { miLocalStorage } from '@/local-storage';
 import { customEmojis } from '@/custom-emojis';
@@ -71,14 +71,14 @@ const emojiDb = computed(() => {
 		url: char2path(x.char),
 	}));
 
-	for (const index of Object.values(defaultStore.state.additionalUnicodeEmojiIndexes)) {
-		for (const [emoji, keywords] of Object.entries(index)) {
-			for (const k of keywords) {
+	for (const x of lib) {
+		if (x.keywords) {
+			for (const k of x.keywords) {
 				unicodeEmojiDB.push({
-					emoji: emoji,
+					emoji: x.char,
 					name: k,
-					aliasOf: getEmojiName(emoji)!,
-					url: char2path(emoji),
+					aliasOf: x.name,
+					url: char2path(x.char),
 				});
 			}
 		}

@@ -1,20 +1,14 @@
 <template>
-<span v-if="!fetching" :class="$style.root">
+<span v-if="!fetching" class="nmidsaqw">
 	<template v-if="display === 'marquee'">
-		<Transition
-			:enterActiveClass="$style.transition_change_enterActive"
-			:leaveActiveClass="$style.transition_change_leaveActive"
-			:enterFromClass="$style.transition_change_enterFrom"
-			:leaveToClass="$style.transition_change_leaveTo"
-			mode="default"
-		>
+		<Transition name="change" mode="default">
 			<MarqueeText :key="key" :duration="marqueeDuration" :reverse="marqueeReverse">
-				<span v-for="instance in instances" :key="instance.id" :class="[$style.item, { [$style.colored]: colored }]" :style="{ background: colored ? instance.themeColor : null }">
-					<img :class="$style.icon" :src="getInstanceIcon(instance)" alt=""/>
-					<MkA :to="`/instance-info/${instance.host}`" :class="$style.host" class="_monospace">
+				<span v-for="instance in instances" :key="instance.id" class="item" :class="{ colored }" :style="{ background: colored ? instance.themeColor : null }">
+					<img class="icon" :src="getInstanceIcon(instance)" alt=""/>
+					<MkA :to="`/instance-info/${instance.host}`" class="host _monospace">
 						{{ instance.host }}
 					</MkA>
-					<span></span>
+					<span class="divider"></span>
 				</span>
 			</MarqueeText>
 		</Transition>
@@ -67,47 +61,46 @@ function getInstanceIcon(instance): string {
 }
 </script>
 
-<style lang="scss" module>
-.transition_change_enterActive,
-.transition_change_leaveActive {
+<style lang="scss" scoped>
+.change-enter-active, .change-leave-active {
 	position: absolute;
 	top: 0;
   transition: all 1s ease;
 }
-.transition_change_enterFrom {
-	opacity: 0;
+.change-enter-from {
+  opacity: 0;
 	transform: translateY(-100%);
 }
-.transition_change_leaveTo {
-	opacity: 0;
+.change-leave-to {
+  opacity: 0;
 	transform: translateY(100%);
 }
 
-.root {
+.nmidsaqw {
 	display: inline-block;
 	position: relative;
-}
 
-.item {
-	display: inline-block;
-	vertical-align: bottom;
-	margin-right: 5em;
+	::v-deep(.item) {
+		display: inline-block;
+		vertical-align: bottom;
+		margin-right: 5em;
 
-	&.colored {
-		padding-right: 1em;
-		color: #fff;
+		> .icon {
+			display: inline-block;
+			height: var(--height);
+			aspect-ratio: 1;
+			vertical-align: bottom;
+			margin-right: 1em;
+		}
+
+		> .host {
+			vertical-align: bottom;
+		}
+
+		&.colored {
+			padding-right: 1em;
+			color: #fff;
+		}
 	}
-}
-
-.icon {
-	display: inline-block;
-	height: var(--height);
-	aspect-ratio: 1;
-	vertical-align: bottom;
-	margin-right: 1em;
-}
-
-.host {
-	vertical-align: bottom;
 }
 </style>

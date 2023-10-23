@@ -1,5 +1,5 @@
 <template>
-<MkSpacer :contentMax="700">
+<MkSpacer :content-max="700">
 	<MkPagination v-slot="{items}" ref="list" :pagination="pagination">
 		<MkPagePreview v-for="page in items" :key="page.id" :page="page" class="_margin"/>
 	</MkPagination>
@@ -24,3 +24,7 @@ const pagination = {
 	})),
 };
 </script>
+
+<style lang="scss" scoped>
+
+</style>

@@ -5,15 +5,15 @@
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import * as Misskey from 'misskey-js';
-import { ImageBlock } from './block.type';
+import { PropType } from 'vue';
 import ImgWithBlurhash from '@/components/MkImgWithBlurhash.vue';
+import { ImageBlock } from '@/scripts/hpml/block';
+import { Hpml } from '@/scripts/hpml/evaluator';
 
 const props = defineProps<{
-	block: ImageBlock,
-	page: Misskey.entities.Page,
+	block: PropType<ImageBlock>,
+	hpml: PropType<Hpml>,
 }>();
 
-const image = props.page.attachedFiles.find(x => x.id === props.block.fileId);
+const image = props.hpml.page.attachedFiles.find(x => x.id === props.block.fileId);
 </script>

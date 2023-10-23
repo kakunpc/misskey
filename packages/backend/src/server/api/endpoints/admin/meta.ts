@@ -61,17 +61,10 @@ export const meta = {
 				type: 'string',
 				optional: false, nullable: true,
 			},
-			serverErrorImageUrl: {
+			errorImageUrl: {
 				type: 'string',
 				optional: false, nullable: true,
-			},
-			infoImageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			notFoundImageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
+				default: 'https://xn--931a.moe/aiart/yubitun.png',
 			},
 			iconUrl: {
 				type: 'string',
@@ -312,9 +305,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				themeColor: instance.themeColor,
 				mascotImageUrl: instance.mascotImageUrl,
 				bannerUrl: instance.bannerUrl,
-				serverErrorImageUrl: instance.serverErrorImageUrl,
-				notFoundImageUrl: instance.notFoundImageUrl,
-				infoImageUrl: instance.infoImageUrl,
+				errorImageUrl: instance.errorImageUrl,
 				iconUrl: instance.iconUrl,
 				backgroundImageUrl: instance.backgroundImageUrl,
 				logoImageUrl: instance.logoImageUrl,

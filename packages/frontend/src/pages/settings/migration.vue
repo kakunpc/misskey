@@ -3,7 +3,7 @@
 	<FormInfo warn>
 		{{ i18n.ts.thisIsExperimentalFeature }}
 	</FormInfo>
-	<MkFolder :defaultOpen="true">
+	<MkFolder :default-open="true">
 		<template #icon><i class="ti ti-plane-arrival"></i></template>
 		<template #label>{{ i18n.ts._accountMigration.moveFrom }}</template>
 		<template #caption>{{ i18n.ts._accountMigration.moveFromSub }}</template>
@@ -25,7 +25,7 @@
 		</div>
 	</MkFolder>
 
-	<MkFolder :defaultOpen="!!$i?.movedTo">
+	<MkFolder :default-open="!!$i?.movedTo">
 		<template #icon><i class="ti ti-plane-departure"></i></template>
 		<template #label>{{ i18n.ts._accountMigration.moveTo }}</template>
 
@@ -48,7 +48,7 @@
 				<FormInfo>{{ i18n.ts._accountMigration.postMigrationNote }}</FormInfo>
 				<FormInfo warn>{{ i18n.ts._accountMigration.movedAndCannotBeUndone }}</FormInfo>
 				<div>{{ i18n.ts._accountMigration.movedTo }}</div>
-				<MkUserInfo v-if="movedTo" :user="movedTo" class="_panel _shadow"/>
+				<MkUserInfo v-if="movedTo" :user="movedTo" class="_panel _shadow" />
 			</template>
 		</div>
 	</MkFolder>
@@ -57,8 +57,6 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { toString } from 'misskey-js/built/acct';
-import { UserDetailed } from 'misskey-js/built/entities';
 import FormInfo from '@/components/MkInfo.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -68,6 +66,8 @@ import * as os from '@/os';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
 import { $i } from '@/account';
+import { toString } from 'misskey-js/built/acct';
+import { UserDetailed } from 'misskey-js/built/entities';
 import { unisonReload } from '@/scripts/unison-reload';
 
 const moveToAccount = ref('');

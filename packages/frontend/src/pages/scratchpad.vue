@@ -1,8 +1,8 @@
 <template>
-<MkSpacer :contentMax="800">
+<MkSpacer :content-max="800">
 	<div :class="$style.root">
 		<div :class="$style.editor" class="_panel">
-			<PrismEditor v-model="code" class="_code code" :highlight="highlighter" :lineNumbers="false"/>
+			<PrismEditor v-model="code" class="_code code" :highlight="highlighter" :line-numbers="false"/>
 			<MkButton style="position: absolute; top: 8px; right: 8px;" primary @click="run()"><i class="ti ti-player-play"></i></MkButton>
 		</div>
 

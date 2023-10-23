@@ -5,7 +5,7 @@ import { defineAsyncComponent, Directive, ref } from 'vue';
 import { isTouchUsing } from '@/scripts/touch';
 import { popup, alert } from '@/os';
 
-const start = isTouchUsing ? 'touchstart' : 'mouseenter';
+const start = isTouchUsing ? 'touchstart' : 'mouseover';
 const end = isTouchUsing ? 'touchend' : 'mouseleave';
 
 export default {
@@ -63,24 +63,16 @@ export default {
 			ev.preventDefault();
 		});
 
-		el.addEventListener(start, (ev) => {
+		el.addEventListener(start, () => {
 			window.clearTimeout(self.showTimer);
 			window.clearTimeout(self.hideTimer);
-			if (delay === 0) {
-				self.show();
-			} else {
-				self.showTimer = window.setTimeout(self.show, delay);
-			}
+			self.showTimer = window.setTimeout(self.show, delay);
 		}, { passive: true });
 
 		el.addEventListener(end, () => {
 			window.clearTimeout(self.showTimer);
 			window.clearTimeout(self.hideTimer);
-			if (delay === 0) {
-				self.close();
-			} else {
-				self.hideTimer = window.setTimeout(self.close, delay);
-			}
+			self.hideTimer = window.setTimeout(self.close, delay);
 		}, { passive: true });
 
 		el.addEventListener('click', () => {

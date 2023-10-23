@@ -1,16 +1,14 @@
 <template>
-<div data-cy-mkw-onlineUsers :class="[$style.root, { _panel: !widgetProps.transparent, [$style.pad]: !widgetProps.transparent }]">
-	<span :class="$style.text">
-		<I18n v-if="onlineUsersCount" :src="i18n.ts.onlineUsersCount" textTag="span">
-			<template #n><b style="color: #41b781;">{{ number(onlineUsersCount) }}</b></template>
-		</I18n>
-	</span>
+<div data-cy-mkw-onlineUsers class="mkw-onlineUsers" :class="{ _panel: !widgetProps.transparent, pad: !widgetProps.transparent }">
+	<I18n v-if="onlineUsersCount" :src="i18n.ts.onlineUsersCount" text-tag="span" class="text">
+		<template #n><b>{{ number(onlineUsersCount) }}</b></template>
+	</I18n>
 </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget';
+import { useWidgetPropsManager, Widget, WidgetComponentExpose } from './widget';
 import { GetFormResultType } from '@/scripts/form';
 import * as os from '@/os';
 import { useInterval } from '@/scripts/use-interval';
@@ -28,8 +26,11 @@ const widgetPropsDef = {
 
 type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 
-const props = defineProps<WidgetComponentProps<WidgetProps>>();
-const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
+// 現時点ではvueの制限によりimportしたtypeをジェネリックに渡せない
+//const props = defineProps<WidgetComponentProps<WidgetProps>>();
+//const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
+const props = defineProps<{ widget?: Widget<WidgetProps>; }>();
+const emit = defineEmits<{ (ev: 'updateProps', props: WidgetProps); }>();
 
 const { widgetProps, configure } = useWidgetPropsManager(name,
 	widgetPropsDef,
@@ -57,16 +58,22 @@ defineExpose<WidgetComponentExpose>({
 });
 </script>
 
-<style lang="scss" module>
-.root {
+<style lang="scss" scoped>
+.mkw-onlineUsers {
 	text-align: center;
 
 	&.pad {
 		padding: 16px 0;
 	}
-}
 
-.text {
-	color: var(--fgTransparentWeak);
+	> .text {
+		::v-deep(b) {
+			color: #41b781;
+		}
+
+		::v-deep(span) {
+			opacity: 0.7;
+		}
+	}
 }
 </style>

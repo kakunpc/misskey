@@ -6,7 +6,7 @@
 			<MkUserName :user="$i" :nowrap="true"/>
 		</div>
 		<div>
-			<div>
+			<div :class="$style.content">
 				<Mfm :text="text.trim()" :author="$i" :i="$i"/>
 			</div>
 		</div>

@@ -55,6 +55,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				throw new ApiError(meta.errors.noSuchSession);
 			}
 
+			// Generate access token
 			const accessToken = secureRndstr(32, true);
 
 			// Fetch exist access token
@@ -64,6 +65,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			});
 
 			if (exist == null) {
+				// Lookup app
 				const app = await this.appsRepository.findOneByOrFail({ id: session.appId });
 
 				// Generate Hash
@@ -73,6 +75,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 				const now = new Date();
 
+				// Insert access token doc
 				await this.accessTokensRepository.insert({
 					id: this.idService.genId(),
 					createdAt: now,

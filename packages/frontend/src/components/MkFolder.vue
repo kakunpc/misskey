@@ -5,8 +5,8 @@
 			<div :class="[$style.header, { [$style.opened]: opened }]" class="_button" role="button" data-cy-folder-header @click="toggle">
 				<div :class="$style.headerIcon"><slot name="icon"></slot></div>
 				<div :class="$style.headerText">
-					<div>
-						<MkCondensedLine :minScale="2 / 3"><slot name="label"></slot></MkCondensedLine>
+					<div :class="$style.headerTextMain">
+						<slot name="label"></slot>
 					</div>
 					<div :class="$style.headerTextSub">
 						<slot name="caption"></slot>
@@ -22,18 +22,18 @@
 
 		<div v-if="openedAtLeastOnce" :class="[$style.body, { [$style.bgSame]: bgSame }]" :style="{ maxHeight: maxHeight ? `${maxHeight}px` : null, overflow: maxHeight ? `auto` : null }" :aria-hidden="!opened">
 			<Transition
-				:enterActiveClass="defaultStore.state.animation ? $style.transition_toggle_enterActive : ''"
-				:leaveActiveClass="defaultStore.state.animation ? $style.transition_toggle_leaveActive : ''"
-				:enterFromClass="defaultStore.state.animation ? $style.transition_toggle_enterFrom : ''"
-				:leaveToClass="defaultStore.state.animation ? $style.transition_toggle_leaveTo : ''"
+				:enter-active-class="defaultStore.state.animation ? $style.transition_toggle_enterActive : ''"
+				:leave-active-class="defaultStore.state.animation ? $style.transition_toggle_leaveActive : ''"
+				:enter-from-class="defaultStore.state.animation ? $style.transition_toggle_enterFrom : ''"
+				:leave-to-class="defaultStore.state.animation ? $style.transition_toggle_leaveTo : ''"
 				@enter="enter"
-				@afterEnter="afterEnter"
+				@after-enter="afterEnter"
 				@leave="leave"
-				@afterLeave="afterLeave"
+				@after-leave="afterLeave"
 			>
 				<KeepAlive>
 					<div v-show="opened">
-						<MkSpacer :marginMin="14" :marginMax="22">
+						<MkSpacer :margin-min="14" :margin-max="22">
 							<slot></slot>
 						</MkSpacer>
 					</div>
@@ -183,6 +183,10 @@ onMounted(() => {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	padding-right: 12px;
+}
+
+.headerTextMain {
+
 }
 
 .headerTextSub {

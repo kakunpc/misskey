@@ -1,8 +1,8 @@
 <template>
 <MkStickyContainer>
 	<template #header><XHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="900">
-		<div>
+	<MkSpacer :content-max="900">
+		<div class="lcixvhis">
 			<div class="reports">
 				<div class="">
 					<div class="inputs" style="display: flex;">
@@ -87,3 +87,9 @@ definePageMetadata({
 	icon: 'ti ti-exclamation-circle',
 });
 </script>
+
+<style lang="scss" scoped>
+.lcixvhis {
+	margin: var(--margin);
+}
+</style>

@@ -2,10 +2,10 @@
 <MkModal
 	ref="modal"
 	v-slot="{ type, maxHeight }"
-	:zPriority="'middle'"
-	:preferType="asReactionPicker && defaultStore.state.reactionPickerUseDrawerForMobile === false ? 'popup' : 'auto'"
-	:transparentBg="true"
-	:manualShowing="manualShowing"
+	:z-priority="'middle'"
+	:prefer-type="asReactionPicker && defaultStore.state.reactionPickerUseDrawerForMobile === false ? 'popup' : 'auto'"
+	:transparent-bg="true"
+	:manual-showing="manualShowing"
 	:src="src"
 	@click="modal?.close()"
 	@opening="opening"
@@ -14,11 +14,11 @@
 >
 	<MkEmojiPicker
 		ref="picker"
-		class="_popup _shadow"
-		:class="{ [$style.drawer]: type === 'drawer' }"
-		:showPinned="showPinned"
-		:asReactionPicker="asReactionPicker"
-		:asDrawer="type === 'drawer'"
+		class="ryghynhb _popup _shadow"
+		:class="{ drawer: type === 'drawer' }"
+		:show-pinned="showPinned"
+		:as-reaction-picker="asReactionPicker"
+		:as-drawer="type === 'drawer'"
 		:max-height="maxHeight"
 		@chosen="chosen"
 	/>
@@ -67,10 +67,12 @@ function opening() {
 }
 </script>
 
-<style lang="scss" module>
-.drawer {
-	border-radius: 24px;
-	border-bottom-right-radius: 0;
-	border-bottom-left-radius: 0;
+<style lang="scss" scoped>
+.ryghynhb {
+	&.drawer {
+		border-radius: 24px;
+		border-bottom-right-radius: 0;
+		border-bottom-left-radius: 0;
+	}
 }
 </style>

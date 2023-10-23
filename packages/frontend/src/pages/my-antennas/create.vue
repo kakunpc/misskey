@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="geegznzt">
 	<XAntenna :antenna="draft" @created="onAntennaCreated"/>
 </div>
 </template>
@@ -38,3 +38,7 @@ definePageMetadata({
 	icon: 'ti ti-antenna',
 });
 </script>
+
+<style lang="scss" scoped>
+
+</style>

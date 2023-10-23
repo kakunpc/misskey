@@ -132,3 +132,7 @@ defineExpose({
 	pushData,
 });
 </script>
+
+<style lang="scss" scoped>
+
+</style>

@@ -2,15 +2,15 @@
 <div v-if="hasDisconnected && defaultStore.state.serverDisconnectedBehavior === 'quiet'" :class="$style.root" class="_panel _shadow" @click="resetDisconnected">
 	<div><i class="ti ti-alert-triangle"></i> {{ i18n.ts.disconnectedFromServer }}</div>
 	<div :class="$style.command" class="_buttons">
-		<MkButton small primary @click="reload">{{ i18n.ts.reload }}</MkButton>
-		<MkButton small>{{ i18n.ts.doNothing }}</MkButton>
+		<MkButton :class="$style.commandButton" small primary @click="reload">{{ i18n.ts.reload }}</MkButton>
+		<MkButton :class="$style.commandButton" small>{{ i18n.ts.doNothing }}</MkButton>
 	</div>
 </div>
 </template>
 
 <script lang="ts" setup>
 import { onUnmounted } from 'vue';
-import { useStream } from '@/stream';
+import { stream } from '@/stream';
 import { i18n } from '@/i18n';
 import MkButton from '@/components/MkButton.vue';
 import * as os from '@/os';
@@ -32,10 +32,10 @@ function reload() {
 	location.reload();
 }
 
-useStream().on('_disconnected_', onDisconnected);
+stream.on('_disconnected_', onDisconnected);
 
 onUnmounted(() => {
-	useStream().off('_disconnected_', onDisconnected);
+	stream.off('_disconnected_', onDisconnected);
 });
 </script>
 
@@ -53,5 +53,8 @@ onUnmounted(() => {
 
 .command {
 	margin-top: 8px;
+}
+
+.commandButton {
 }
 </style>

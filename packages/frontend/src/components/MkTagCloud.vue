@@ -1,7 +1,7 @@
 <template>
-<div ref="rootEl" :class="$style.root">
-	<canvas :id="idForCanvas" ref="canvasEl" style="display: block;" :width="width" height="300" @contextmenu.prevent="() => {}"></canvas>
-	<div :id="idForTags" ref="tagsEl" :class="$style.tags">
+<div ref="rootEl" class="meijqfqm">
+	<canvas :id="idForCanvas" ref="canvasEl" class="canvas" :width="width" height="300" @contextmenu.prevent="() => {}"></canvas>
+	<div :id="idForTags" ref="tagsEl" class="tags">
 		<ul>
 			<slot></slot>
 		</ul>
@@ -70,17 +70,21 @@ defineExpose({
 });
 </script>
 
-<style lang="scss" module>
-.root {
+<style lang="scss" scoped>
+.meijqfqm {
 	position: relative;
 	overflow: clip;
 	display: grid;
 	place-items: center;
-}
 
-.tags {
-	position: absolute;
-	top: 999px;
-	left: 999px;
+	> .canvas {
+		display: block;
+	}
+
+	> .tags {
+		position: absolute;
+		top: 999px;
+		left: 999px;
+	}
 }
 </style>

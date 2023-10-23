@@ -1,8 +1,8 @@
 <template>
 <MkStickyContainer>
 	<template #header><XHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="900">
-		<div class="_gaps_m">
+	<MkSpacer :content-max="900">
+		<div class="ztgjmzrw _gaps_m">
 			<section v-for="announcement in announcements" class="">
 				<div class="_panel _gaps_m" style="padding: 24px;">
 					<MkInput v-model="announcement.title">
@@ -113,3 +113,9 @@ definePageMetadata({
 	icon: 'ti ti-speakerphone',
 });
 </script>
+
+<style lang="scss" scoped>
+.ztgjmzrw {
+	margin: var(--margin);
+}
+</style>

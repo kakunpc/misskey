@@ -35,7 +35,6 @@ export class UserListEntityService {
 			createdAt: userList.createdAt.toISOString(),
 			name: userList.name,
 			userIds: users.map(x => x.userId),
-			isPublic: userList.isPublic,
 		};
 	}
 }

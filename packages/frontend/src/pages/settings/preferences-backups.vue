@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, useCssModule } from 'vue';
 import { v4 as uuid } from 'uuid';
 import FormSection from '@/components/form/section.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -40,13 +40,15 @@ import MkInfo from '@/components/MkInfo.vue';
 import * as os from '@/os';
 import { ColdDeviceStorage, defaultStore } from '@/store';
 import { unisonReload } from '@/scripts/unison-reload';
-import { useStream } from '@/stream';
+import { stream } from '@/stream';
 import { $i } from '@/account';
 import { i18n } from '@/i18n';
 import { version, host } from '@/config';
 import { definePageMetadata } from '@/scripts/page-metadata';
 import { miLocalStorage } from '@/local-storage';
 const { t, ts } = i18n;
+
+useCssModule();
 
 const defaultStoreSaveKeys: (keyof typeof defaultStore['state'])[] = [
 	'menu',
@@ -123,7 +125,7 @@ type Profile = {
 	};
 };
 
-const connection = $i && useStream().useChannel('main');
+const connection = $i && stream.useChannel('main');
 
 let profiles = $ref<Record<string, Profile> | null>(null);
 
