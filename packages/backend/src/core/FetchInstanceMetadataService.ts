@@ -10,7 +10,6 @@ import { DI } from '@/di-symbols.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { bindThis } from '@/decorators.js';
-import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import type { DOMWindow } from 'jsdom';
 
 type NodeInfo = {
@@ -43,7 +42,6 @@ export class FetchInstanceMetadataService {
 		private appLockService: AppLockService,
 		private httpRequestService: HttpRequestService,
 		private loggerService: LoggerService,
-		private federatedInstanceService: FederatedInstanceService,
 	) {
 		this.logger = this.loggerService.getLogger('metadata', 'cyan');
 	}
@@ -98,7 +96,7 @@ export class FetchInstanceMetadataService {
 			if (favicon) updates.faviconUrl = favicon;
 			if (themeColor) updates.themeColor = themeColor;
 	
-			await this.federatedInstanceService.update(instance.id, updates);
+			await this.instancesRepository.update(instance.id, updates);
 	
 			this.logger.succ(`Successfuly updated metadata of ${instance.host}`);
 		} catch (e) {

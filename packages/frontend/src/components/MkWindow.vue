@@ -29,7 +29,7 @@
 					<button v-if="closeButton" v-tooltip="i18n.ts.close" class="_button" :class="$style.headerButton" @click="close()"><i class="ti ti-x"></i></button>
 				</span>
 			</div>
-			<div :class="$style.content">
+			<div v-container :class="$style.content">
 				<slot></slot>
 			</div>
 		</div>
@@ -541,7 +541,7 @@ defineExpose({
 	flex: 1;
 	overflow: auto;
 	background: var(--panel);
-	container-type: size;
+	container-type: inline-size;
 }
 
 $handleSize: 8px;

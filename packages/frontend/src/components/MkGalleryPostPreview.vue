@@ -1,21 +1,9 @@
 <template>
 <MkA :to="`/gallery/${post.id}`" class="ttasepnz _panel" tabindex="-1" @pointerenter="enterHover" @pointerleave="leaveHover">
 	<div class="thumbnail">
+		<ImgWithBlurhash class="img" :hash="post.files[0].blurhash"/>
 		<Transition>
-			<ImgWithBlurhash
-				class="img layered"
-				:transition="safe ? null : {
-					enterActiveClass: $style.transition_toggle_enterActive,
-					leaveActiveClass: $style.transition_toggle_leaveActive,
-					enterFromClass: $style.transition_toggle_enterFrom,
-					leaveToClass: $style.transition_toggle_leaveTo,
-					enterToClass: $style.transition_toggle_enterTo,
-					leaveFromClass: $style.transition_toggle_leaveFrom,
-				}"
-				:src="post.files[0].thumbnailUrl"
-				:hash="post.files[0].blurhash"
-				:force-blurhash="!show"
-			/>
+			<ImgWithBlurhash v-if="show" class="img layered" :src="post.files[0].thumbnailUrl" :hash="post.files[0].blurhash"/>
 		</Transition>
 	</div>
 	<article>
@@ -40,8 +28,7 @@ const props = defineProps<{
 }>();
 
 const hover = ref(false);
-const safe = computed(() => defaultStore.state.nsfw === 'ignore' || defaultStore.state.nsfw === 'respect' && !props.post.isSensitive);
-const show = computed(() => safe.value || hover.value);
+const show = computed(() => defaultStore.state.nsfw === 'ignore' || defaultStore.state.nsfw === 'respect' && !props.post.isSensitive || hover.value);
 
 function enterHover(): void {
 	hover.value = true;
@@ -51,27 +38,6 @@ function leaveHover(): void {
 	hover.value = false;
 }
 </script>
-
-<style lang="scss" module>
-.transition_toggle_enterActive,
-.transition_toggle_leaveActive {
-	transition: opacity 0.5s;
-	position: absolute;
-	top: 0;
-	left: 0;
-}
-
-.transition_toggle_enterFrom,
-.transition_toggle_leaveTo {
-	opacity: 0;
-}
-
-.transition_toggle_enterTo,
-.transition_toggle_leaveFrom {
-	transition: none;
-	opacity: 1;
-}
-</style>
 
 <style lang="scss" scoped>
 .ttasepnz {
@@ -100,7 +66,7 @@ function leaveHover(): void {
 		width: 100%;
 		height: 100%;
 		position: absolute;
-		transition: transform 0.5s ease;
+		transition: all 0.5s ease;
 
 		> .img {
 			width: 100%;
@@ -110,6 +76,16 @@ function leaveHover(): void {
 			&.layered {
 				position: absolute;
 				top: 0;
+
+				&.v-enter-active,
+				&.v-leave-active {
+					transition: opacity 0.5s ease;
+				}
+
+				&.v-enter-from,
+				&.v-leave-to {
+					opacity: 0;
+				}
 			}
 		}
 	}

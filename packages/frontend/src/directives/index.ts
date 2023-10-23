@@ -11,6 +11,7 @@ import clickAnime from './click-anime';
 import panel from './panel';
 import adaptiveBorder from './adaptive-border';
 import adaptiveBg from './adaptive-bg';
+import container from './container';
 
 export default function(app: App) {
 	for (const [key, value] of Object.entries(directives)) {
@@ -31,4 +32,5 @@ export const directives = {
 	'panel': panel,
 	'adaptive-border': adaptiveBorder,
 	'adaptive-bg': adaptiveBg,
+	'container': container,
 };

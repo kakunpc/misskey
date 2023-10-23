@@ -343,16 +343,6 @@ if ($i) {
 	// only add post shortcuts if logged in
 	hotkeys['p|n'] = post;
 
-	if (defaultStore.state.accountSetupWizard !== -1) {
-		// このウィザードが実装される前に登録したユーザーには表示させないため
-		// TODO: そのうち消す
-		if (Date.now() - new Date($i.createdAt).getTime() < 1000 * 60 * 60 * 24) {
-			popup(defineAsyncComponent(() => import('@/components/MkUserSetupDialog.vue')), {}, {}, 'closed');
-		} else {
-			defaultStore.set('accountSetupWizard', -1);
-		}
-	}
-
 	if ($i.isDeleted) {
 		alert({
 			type: 'warning',
@@ -441,10 +431,6 @@ if ($i) {
 		claimAchievement('client30min');
 	}, 1000 * 60 * 30);
 
-	window.setTimeout(() => {
-		claimAchievement('client60min');
-	}, 1000 * 60 * 60);
-
 	const lastUsed = miLocalStorage.getItem('lastUsed');
 	if (lastUsed) {
 		const lastUsedDate = parseInt(lastUsed, 10);
@@ -459,7 +445,7 @@ if ($i) {
 
 	const latestDonationInfoShownAt = miLocalStorage.getItem('latestDonationInfoShownAt');
 	const neverShowDonationInfo = miLocalStorage.getItem('neverShowDonationInfo');
-	if (neverShowDonationInfo !== 'true' && (new Date($i.createdAt).getTime() < (Date.now() - (1000 * 60 * 60 * 24 * 3))) && !location.pathname.startsWith('/miauth')) {
+	if (neverShowDonationInfo !== 'true' && (new Date($i.createdAt).getTime() < (Date.now() - (1000 * 60 * 60 * 24 * 3)))) {
 		if (latestDonationInfoShownAt == null || (new Date(latestDonationInfoShownAt).getTime() < (Date.now() - (1000 * 60 * 60 * 24 * 30)))) {
 			popup(defineAsyncComponent(() => import('@/components/MkDonation.vue')), {}, {}, 'closed');
 		}

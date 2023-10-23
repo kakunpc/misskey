@@ -4,7 +4,7 @@
 
 import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
+import { dirname } from 'node:path';
 import * as yaml from 'js-yaml';
 
 /**
@@ -57,12 +57,13 @@ export type Source = {
 		db?: number;
 		prefix?: string;
 	};
-	meilisearch?: {
+	elasticsearch: {
 		host: string;
-		port: string;
-		apiKey: string;
+		port: number;
 		ssl?: boolean;
-		index: string;
+		user?: string;
+		pass?: string;
+		index?: string;
 	};
 
 	proxy?: string;
@@ -83,10 +84,8 @@ export type Source = {
 
 	deliverJobConcurrency?: number;
 	inboxJobConcurrency?: number;
-	relashionshipJobConcurrency?: number;
 	deliverJobPerSec?: number;
 	inboxJobPerSec?: number;
-	relashionshipJobPerSec?: number;
 	deliverJobMaxAttempts?: number;
 	inboxJobMaxAttempts?: number;
 
@@ -133,11 +132,9 @@ const dir = `${_dirname}/../../../.config`;
 /**
  * Path of configuration file
  */
-const path = process.env.MISSKEY_CONFIG_YML
-	? resolve(dir, process.env.MISSKEY_CONFIG_YML)
-	: process.env.NODE_ENV === 'test'
-		? resolve(dir, 'test.yml')
-		: resolve(dir, 'default.yml');
+const path = process.env.NODE_ENV === 'test'
+	? `${dir}/test.yml`
+	: `${dir}/default.yml`;
 
 export function loadConfig() {
 	const meta = JSON.parse(fs.readFileSync(`${_dirname}/../../../built/meta.json`, 'utf-8'));

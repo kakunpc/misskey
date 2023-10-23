@@ -1,7 +1,6 @@
 <template>
 <div :class="[$style.root, { [$style.children]: depth > 1 }]">
 	<div :class="$style.main">
-		<div v-if="note.channel" :class="$style.colorBar" :style="{ background: note.channel.color }"></div>
 		<MkAvatar :class="$style.avatar" :user="note.user" link preview/>
 		<div :class="$style.body">
 			<MkNoteHeader :class="$style.header" :note="note" :mini="true"/>
@@ -63,7 +62,6 @@ if (props.detail) {
 .root {
 	padding: 16px 32px;
 	font-size: 0.9em;
-	position: relative;
 
 	&.children {
 		padding: 10px 0 0 16px;
@@ -73,16 +71,6 @@ if (props.detail) {
 
 .main {
 	display: flex;
-}
-
-.colorBar {
-	position: absolute;
-	top: 8px;
-	left: 8px;
-	width: 5px;
-	height: calc(100% - 8px);
-	border-radius: 999px;
-	pointer-events: none;
 }
 
 .avatar {

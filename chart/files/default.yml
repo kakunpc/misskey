@@ -116,15 +116,15 @@ redis:
 #  #prefix: example-prefix
 #  #db: 1
 
-#   ┌───────────────────────────┐
-#───┘ MeiliSearch configuration └─────────────────────────────
+#   ┌─────────────────────────────┐
+#───┘ Elasticsearch configuration └─────────────────────────────
 
-#meilisearch:
+#elasticsearch:
 #  host: localhost
-#  port: 7700
-#  apiKey: ''
-#  ssl: true
-#  index: ''
+#  port: 9200
+#  ssl: false
+#  user:
+#  pass:
 
 #   ┌───────────────┐
 #───┘ ID generation └───────────────────────────────────────────

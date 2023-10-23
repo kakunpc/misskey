@@ -96,7 +96,7 @@ const ownedPagination = {
 async function search() {
 	const query = searchQuery.toString().trim();
 
-	if (query == null) return;
+	if (query == null || query === '') return;
 
 	const type = searchType.toString().trim();
 

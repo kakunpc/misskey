@@ -7,7 +7,6 @@ import { GlobalModule } from '@/GlobalModule.js';
 import { RelayService } from '@/core/RelayService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { CreateSystemUserService } from '@/core/CreateSystemUserService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { QueueService } from '@/core/QueueService.js';
 import { IdService } from '@/core/IdService.js';
 import type { RelaysRepository } from '@/models/index.js';
@@ -22,7 +21,6 @@ describe('RelayService', () => {
 	let relayService: RelayService;
 	let queueService: jest.Mocked<QueueService>;
 	let relaysRepository: RelaysRepository;
-	let userEntityService: UserEntityService;
 
 	beforeAll(async () => {
 		app = await Test.createTestingModule({
@@ -34,7 +32,6 @@ describe('RelayService', () => {
 				CreateSystemUserService,
 				ApRendererService,
 				RelayService,
-				UserEntityService,
 			],
 		})
 			.useMocker((token) => {
@@ -54,7 +51,6 @@ describe('RelayService', () => {
 		relayService = app.get<RelayService>(RelayService);
 		queueService = app.get<QueueService>(QueueService) as jest.Mocked<QueueService>;
 		relaysRepository = app.get<RelaysRepository>(DI.relaysRepository);
-		userEntityService = app.get<UserEntityService>(UserEntityService);
 	});
 
 	afterAll(async () => {
@@ -67,7 +63,7 @@ describe('RelayService', () => {
 		expect(result.inbox).toBe('https://example.com');
 		expect(result.status).toBe('requesting');
 		expect(queueService.deliver).toHaveBeenCalled();
-		expect(queueService.deliver.mock.lastCall![1]?.type).toBe('Follow');
+		expect(queueService.deliver.mock.lastCall![1].type).toBe('Follow');
 		expect(queueService.deliver.mock.lastCall![2]).toBe('https://example.com');
 		//expect(queueService.deliver.mock.lastCall![0].username).toBe('relay.actor');
 	});
@@ -84,8 +80,8 @@ describe('RelayService', () => {
 		await relayService.removeRelay('https://example.com');
 
 		expect(queueService.deliver).toHaveBeenCalled();
-		expect(queueService.deliver.mock.lastCall![1]?.type).toBe('Undo');
-		expect(queueService.deliver.mock.lastCall![1]?.object.type).toBe('Follow');
+		expect(queueService.deliver.mock.lastCall![1].type).toBe('Undo');
+		expect(queueService.deliver.mock.lastCall![1].object.type).toBe('Follow');
 		expect(queueService.deliver.mock.lastCall![2]).toBe('https://example.com');
 		//expect(queueService.deliver.mock.lastCall![0].username).toBe('relay.actor');
 

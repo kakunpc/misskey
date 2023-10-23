@@ -23,8 +23,8 @@ export class FederatedInstanceService {
 		private idService: IdService,
 	) {
 		this.federatedInstanceCache = new RedisKVCache<Instance | null>(this.redisClient, 'federatedInstance', {
-			lifetime: 1000 * 60 * 30, // 30m
-			memoryCacheLifetime: 1000 * 60 * 3, // 3m
+			lifetime: 1000 * 60 * 60 * 24, // 24h
+			memoryCacheLifetime: 1000 * 60 * 30, // 30m
 			fetcher: (key) => this.instancesRepository.findOneBy({ host: key }),
 			toRedisConverter: (value) => JSON.stringify(value),
 			fromRedisConverter: (value) => {
@@ -65,16 +65,15 @@ export class FederatedInstanceService {
 	}
 
 	@bindThis
-	public async update(id: Instance['id'], data: Partial<Instance>): Promise<void> {
-		const result = await this.instancesRepository.createQueryBuilder().update()
-			.set(data)
-			.where('id = :id', { id })
-			.returning('*')
-			.execute()
-			.then((response) => {
-				return response.raw[0];
-			});
+	public async updateCachePartial(host: string, data: Partial<Instance>): Promise<void> {
+		host = this.utilityService.toPuny(host);
 	
-		this.federatedInstanceCache.set(result.host, result);
+		const cached = await this.federatedInstanceCache.get(host);
+		if (cached == null) return;
+	
+		this.federatedInstanceCache.set(host, {
+			...cached,
+			...data,
+		});
 	}
 }

@@ -4,7 +4,6 @@ import type { UsedUsernamesRepository, UsersRepository } from '@/models/index.js
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { localUsernameSchema } from '@/models/entities/User.js';
 import { DI } from '@/di-symbols.js';
-import { MetaService } from '@/core/MetaService.js';
 
 export const meta = {
 	tags: ['users'],
@@ -40,10 +39,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 		@Inject(DI.usedUsernamesRepository)
 		private usedUsernamesRepository: UsedUsernamesRepository,
-
-		private metaService: MetaService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
+			// Get exist
 			const exist = await this.usersRepository.countBy({
 				host: IsNull(),
 				usernameLower: ps.username.toLowerCase(),
@@ -51,11 +49,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			const exist2 = await this.usedUsernamesRepository.countBy({ username: ps.username.toLowerCase() });
 
-			const meta = await this.metaService.fetch();
-			const isPreserved = meta.preservedUsernames.map(x => x.toLowerCase()).includes(ps.username.toLowerCase());
-
 			return {
-				available: exist === 0 && exist2 === 0 && !isPreserved,
+				available: exist === 0 && exist2 === 0,
 			};
 		});
 	}

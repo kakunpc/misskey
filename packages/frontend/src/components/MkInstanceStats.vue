@@ -52,11 +52,8 @@
 
 	<MkFoldableSection class="item">
 		<template #header>Retention rate</template>
-		<div class="_panel" :class="$style.retentionHeatmap">
+		<div class="_panel" :class="$style.retention">
 			<MkRetentionHeatmap/>
-		</div>
-		<div class="_panel" :class="$style.retentionLine">
-			<MkRetentionLineChart/>
 		</div>
 	</MkFoldableSection>
 
@@ -89,7 +86,6 @@ import { i18n } from '@/i18n';
 import MkHeatmap from '@/components/MkHeatmap.vue';
 import MkFoldableSection from '@/components/MkFoldableSection.vue';
 import MkRetentionHeatmap from '@/components/MkRetentionHeatmap.vue';
-import MkRetentionLineChart from '@/components/MkRetentionLineChart.vue';
 import { initChart } from '@/scripts/init-chart';
 
 initChart();
@@ -206,12 +202,7 @@ onMounted(() => {
 	margin-bottom: 16px;
 }
 
-.retentionHeatmap {
-	padding: 16px;
-	margin-bottom: 16px;
-}
-
-.retentionLine {
+.retention {
 	padding: 16px;
 	margin-bottom: 16px;
 }

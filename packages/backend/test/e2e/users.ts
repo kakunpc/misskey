@@ -51,7 +51,7 @@ describe('ユーザー', () => {
 	
 	type User = MeDetailed & { token: string };	
 
-	const show = async (id: string, me = root): Promise<MeDetailed | UserDetailedNotMe> => {
+	const show = async (id: string, me = alice): Promise<MeDetailed | UserDetailedNotMe> => {
 		return successfulApiCall({ endpoint: 'users/show', parameters: { userId: id }, user: me }) as any;
 	};
 
@@ -83,7 +83,7 @@ describe('ユーザー', () => {
 			...userLite(user),
 			url: user.url,
 			uri: user.uri,
-			movedTo: user.movedTo,
+			movedToUri: user.movedToUri,
 			alsoKnownAs: user.alsoKnownAs,
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
@@ -145,7 +145,6 @@ describe('ユーザー', () => {
 			carefulBot: user.carefulBot,
 			autoAcceptFollowed: user.autoAcceptFollowed,
 			noCrawle: user.noCrawle,
-			preventAiLearning: user.preventAiLearning,
 			isExplorable: user.isExplorable,
 			isDeleted: user.isDeleted,
 			hideOnlineStatus: user.hideOnlineStatus,
@@ -222,8 +221,8 @@ describe('ユーザー', () => {
 	}, 1000 * 60 * 2);
 
 	beforeAll(async () => {
-		root = await signup({ username: 'root' });
-		alice = await signup({ username: 'alice' });
+		root = await signup({ username: 'alice' });
+		alice = root;
 		aliceNote = await post(alice, { text: 'test' }) as any; 
 		alicePage = await page(alice);
 		aliceList = (await api('users/list/create', { name: 'aliceList' }, alice)).body;
@@ -349,7 +348,7 @@ describe('ユーザー', () => {
 		// UserDetailedNotMeOnly
 		assert.strictEqual(response.url, null);
 		assert.strictEqual(response.uri, null);
-		assert.strictEqual(response.movedTo, null);
+		assert.strictEqual(response.movedToUri, null);
 		assert.strictEqual(response.alsoKnownAs, null);
 		assert.strictEqual(response.createdAt, new Date(response.createdAt).toISOString());
 		assert.strictEqual(response.updatedAt, null);
@@ -371,7 +370,7 @@ describe('ユーザー', () => {
 		assert.deepStrictEqual(response.pinnedNotes, []);
 		assert.strictEqual(response.pinnedPageId, null);
 		assert.strictEqual(response.pinnedPage, null);
-		assert.strictEqual(response.publicReactions, true);
+		assert.strictEqual(response.publicReactions, false);
 		assert.strictEqual(response.ffVisibility, 'public');
 		assert.strictEqual(response.twoFactorEnabled, false);
 		assert.strictEqual(response.usePasswordLessLogin, false);
@@ -391,7 +390,6 @@ describe('ユーザー', () => {
 		assert.strictEqual(response.carefulBot, false);
 		assert.strictEqual(response.autoAcceptFollowed, true);
 		assert.strictEqual(response.noCrawle, false);
-		assert.strictEqual(response.preventAiLearning, true);
 		assert.strictEqual(response.isExplorable, true);
 		assert.strictEqual(response.isDeleted, false);
 		assert.strictEqual(response.hideOnlineStatus, false);
@@ -464,8 +462,6 @@ describe('ユーザー', () => {
 		{ parameters: (): object => ({ autoAcceptFollowed: false }) },
 		{ parameters: (): object => ({ noCrawle: true }) },
 		{ parameters: (): object => ({ noCrawle: false }) },
-		{ parameters: (): object => ({ preventAiLearning: false }) },
-		{ parameters: (): object => ({ preventAiLearning: true }) },
 		{ parameters: (): object => ({ isBot: true }) },
 		{ parameters: (): object => ({ isBot: false }) },
 		{ parameters: (): object => ({ isCat: true }) },
@@ -570,10 +566,10 @@ describe('ユーザー', () => {
 		{ label: '空文字', memo: '', expects: null },
 		{ label: 'null', memo: null },
 	])('を書き換えることができる(メモを$labelに)', async ({ memo, expects }) => {
-		const expected = { ...await show(bob.id, alice), memo: expects === undefined ? memo : expects };
+		const expected = { ...await show(bob.id), memo: expects === undefined ? memo : expects };
 		const parameters = { userId: bob.id, memo };
 		await successfulApiCall({ endpoint: 'users/update-memo', parameters, user: alice });
-		const response = await show(bob.id, alice);
+		const response = await show(bob.id);
 		assert.deepStrictEqual(response, expected);
 	});
 
@@ -592,7 +588,7 @@ describe('ユーザー', () => {
 		const response = await successfulApiCall({ endpoint: 'users', parameters, user: alice });
 
 		// 結果の並びを事前にアサートするのは困難なので返ってきたidに対応するユーザーが返っており、ソート順が正しいことだけを検証する
-		const users = await Promise.all(response.map(u => show(u.id, alice)));
+		const users = await Promise.all(response.map(u => show(u.id)));
 		const expected = users.sort((x, y) => {
 			const index = (selector(x) < selector(y)) ? -1 : (selector(x) > selector(y)) ? 1 : 0;
 			return index * (parameters.sort?.startsWith('+') ? -1 : 1);
@@ -606,13 +602,13 @@ describe('ユーザー', () => {
 		{ label: 'ブロックしてきているユーザーが含まれる', user: (): User => userBlockingAlice, excluded: true },
 		{ label: '承認制ユーザーが含まれる', user: (): User => userLocking },
 		{ label: 'サイレンスユーザーが含まれる', user: (): User => userSilenced },
-		{ label: 'サスペンドユーザーが含まれない', user: (): User => userSuspended, excluded: true },
+		{ label: 'サスペンドユーザーが含まれる', user: (): User => userSuspended },
 		{ label: '削除済ユーザーが含まれる', user: (): User => userDeletedBySelf },
 		{ label: '削除済(byAdmin)ユーザーが含まれる', user: (): User => userDeletedByAdmin },
 	] as const)('をリスト形式で取得することができ、結果に$label', async ({ user, excluded }) => {
 		const parameters = { limit: 100 };
 		const response = await successfulApiCall({ endpoint: 'users', parameters, user: alice });
-		const expected = (excluded ?? false) ? [] : [await show(user().id, alice)];
+		const expected = (excluded ?? false) ? [] : [await show(user().id)];
 		assert.deepStrictEqual(response.filter((u) => u.id === user().id), expected);
 	});
 	test.todo('をリスト形式で取得することができる（リモート, hostname指定）');
@@ -639,7 +635,7 @@ describe('ユーザー', () => {
 		{ label: 'Moderatorになっている', user: (): User => userModerator, me: (): User => userModerator, selector: (user: User): unknown => user.isModerator },
 		{ label: '自分以外から見たときはModeratorか判定できない', user: (): User => userModerator, selector: (user: User): unknown => user.isModerator, expected: (): undefined => undefined },
 		{ label: 'サイレンスになっている', user: (): User => userSilenced, selector: (user: User): unknown => user.isSilenced },
-		//{ label: 'サスペンドになっている', user: (): User => userSuspended, selector: (user: User): unknown => user.isSuspended },
+		{ label: 'サスペンドになっている', user: (): User => userSuspended, selector: (user: User): unknown => user.isSuspended },
 		{ label: '削除済みになっている', user: (): User => userDeletedBySelf, me: (): User => userDeletedBySelf, selector: (user: User): unknown => user.isDeleted },
 		{ label: '自分以外から見たときは削除済みか判定できない', user: (): User => userDeletedBySelf, selector: (user: User): unknown => user.isDeleted, expected: (): undefined => undefined },
 		{ label: '削除済み(byAdmin)になっている', user: (): User => userDeletedByAdmin, me: (): User => userDeletedByAdmin, selector: (user: User): unknown => user.isDeleted },
@@ -721,13 +717,13 @@ describe('ユーザー', () => {
 	test('を検索することができる', async () => {
 		const parameters = { query: 'carol', limit: 10 };
 		const response = await successfulApiCall({ endpoint: 'users/search', parameters, user: alice });
-		const expected = [await show(carol.id, alice)];
+		const expected = [await show(carol.id)];
 		assert.deepStrictEqual(response, expected);
 	});
 	test('を検索することができる(UserLite)', async () => {
 		const parameters = { query: 'carol', detail: false, limit: 10 };
 		const response = await successfulApiCall({ endpoint: 'users/search', parameters, user: alice });
-		const expected = [userLite(await show(carol.id, alice))];
+		const expected = [userLite(await show(carol.id))];
 		assert.deepStrictEqual(response, expected);
 	});
 	test.each([
@@ -743,7 +739,7 @@ describe('ユーザー', () => {
 	] as const)('を検索することができ、結果に$labelが含まれる', async ({ user, excluded }) => {
 		const parameters = { query: user().username, limit: 1 };
 		const response = await successfulApiCall({ endpoint: 'users/search', parameters, user: alice });
-		const expected = (excluded ?? false) ? [] : [await show(user().id, alice)];
+		const expected = (excluded ?? false) ? [] : [await show(user().id)];
 		assert.deepStrictEqual(response, expected);
 	});
 	test.todo('を検索することができる(リモート)');
@@ -764,7 +760,7 @@ describe('ユーザー', () => {
 		{ label: 'ローカル', parameters: { host: '.', limit: 1 }, user: (): User[] => [userFollowedByAlice] },
 	])('をID&ホスト指定で検索できる($label)', async ({ parameters, user }) => {
 		const response = await successfulApiCall({ endpoint: 'users/search-by-username-and-host', parameters, user: alice });
-		const expected = await Promise.all(user().map(u => show(u.id, alice)));
+		const expected = await Promise.all(user().map(u => show(u.id)));
 		assert.deepStrictEqual(response, expected);
 	});
 	test.each([
@@ -780,7 +776,7 @@ describe('ユーザー', () => {
 	] as const)('をID&ホスト指定で検索でき、結果に$label', async ({ user, excluded }) => {
 		const parameters = { username: user().username };
 		const response = await successfulApiCall({ endpoint: 'users/search-by-username-and-host', parameters, user: alice });
-		const expected = (excluded ?? false) ? [] : [await show(user().id, alice)];
+		const expected = (excluded ?? false) ? [] : [await show(user().id)];
 		assert.deepStrictEqual(response, expected);
 	});
 	test.todo('をID&ホスト指定で検索できる(リモート)');
@@ -792,7 +788,7 @@ describe('ユーザー', () => {
 		const parameters = { userId: alice.id, limit: 5 };
 		const response = await successfulApiCall({ endpoint: 'users/get-frequently-replied-users', parameters, user: alice });
 		const expected = await Promise.all(usersReplying.slice(0, parameters.limit).map(async (s, i) => ({ 
-			user: await show(s.id, alice),
+			user: await show(s.id),
 			weight: (usersReplying.length - i) / usersReplying.length,
 		})));
 		assert.deepStrictEqual(response, expected);
@@ -804,7 +800,7 @@ describe('ユーザー', () => {
 		{ label: 'ブロックしてきているユーザーが含まれない', user: (): User => userBlockingAlice, excluded: true },
 		{ label: '承認制ユーザーが含まれる', user: (): User => userLocking },
 		{ label: 'サイレンスユーザーが含まれる', user: (): User => userSilenced },
-		//{ label: 'サスペンドユーザーが含まれない', user: (): User => userSuspended, excluded: true },
+		{ label: 'サスペンドユーザーが含まれない', user: (): User => userSuspended },
 		{ label: '削除済ユーザーが含まれる', user: (): User => userDeletedBySelf },
 		{ label: '削除済(byAdmin)ユーザーが含まれる', user: (): User => userDeletedByAdmin },
 	] as const)('がよくリプライをするユーザーのリストを取得でき、結果に$label', async ({ user, excluded }) => {
@@ -812,7 +808,7 @@ describe('ユーザー', () => {
 		await post(alice, { text: `@${user().username} test`, replyId: replyTo.id });
 		const parameters = { userId: alice.id, limit: 100 };
 		const response = await successfulApiCall({ endpoint: 'users/get-frequently-replied-users', parameters, user: alice });
-		const expected = (excluded ?? false) ? [] : [await show(user().id, alice)];
+		const expected = (excluded ?? false) ? [] : [await show(user().id)];
 		assert.deepStrictEqual(response.map(s => s.user).filter((u) => u.id === user().id), expected);
 	});
 
@@ -831,7 +827,7 @@ describe('ユーザー', () => {
 		await successfulApiCall({ endpoint: 'i/update', parameters: { description: `#${hashtag}` }, user: alice });
 		const parameters = { tag: hashtag, limit: 5, ...sort };
 		const response = await successfulApiCall({ endpoint: 'hashtags/users', parameters, user: alice });
-		const users = await Promise.all(response.map(u => show(u.id, alice)));
+		const users = await Promise.all(response.map(u => show(u.id)));
 		const expected = users.sort((x, y) => {
 			const index = (selector(x) < selector(y)) ? -1 : (selector(x) > selector(y)) ? 1 : 0;
 			return index * (parameters.sort.startsWith('+') ? -1 : 1);
@@ -845,10 +841,10 @@ describe('ユーザー', () => {
 		{ label: 'ブロックしてきているユーザーが含まれる', user: (): User => userBlockingAlice },
 		{ label: '承認制ユーザーが含まれる', user: (): User => userLocking },
 		{ label: 'サイレンスユーザーが含まれる', user: (): User => userSilenced },
-		{ label: 'サスペンドユーザーが含まれない', user: (): User => userSuspended, excluded: true },
+		{ label: 'サスペンドユーザーが含まれる', user: (): User => userSuspended },
 		{ label: '削除済ユーザーが含まれる', user: (): User => userDeletedBySelf },
 		{ label: '削除済(byAdmin)ユーザーが含まれる', user: (): User => userDeletedByAdmin },
-	] as const)('をハッシュタグ指定で取得することができ、結果に$label', async ({ user, excluded }) => {
+	] as const)('をハッシュタグ指定で取得することができ、結果に$label', async ({ user }) => {
 		const hashtag = `user_test${user().username}`;
 		if (user() !== userSuspended) {
 			// サスペンドユーザーはupdateできない。
@@ -856,7 +852,7 @@ describe('ユーザー', () => {
 		}
 		const parameters = { tag: hashtag, limit: 100, sort: '-follower' } as const;
 		const response = await successfulApiCall({ endpoint: 'hashtags/users', parameters, user: alice });
-		const expected = (excluded ?? false) ? [] : [await show(user().id, alice)];
+		const expected = [await show(user().id)];
 		assert.deepStrictEqual(response, expected);
 	});
 	test.todo('をハッシュタグ指定で取得することができる(リモート)');
@@ -879,7 +875,7 @@ describe('ユーザー', () => {
 		await successfulApiCall({ endpoint: 'admin/update-meta', parameters: { pinnedUsers: [bob.username, `@${carol.username}`] }, user: root });
 		const parameters = {} as const;
 		const response = await successfulApiCall({ endpoint: 'pinned-users', parameters, user: alice });
-		const expected = await Promise.all([bob, carol].map(u => show(u.id, alice)));
+		const expected = await Promise.all([bob, carol].map(u => show(u.id)));
 		assert.deepStrictEqual(response, expected);
 	});
 

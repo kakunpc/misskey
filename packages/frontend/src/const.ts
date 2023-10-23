@@ -35,11 +35,6 @@ export const FILE_TYPE_BROWSERSAFE = [
 	'audio/webm',
 
 	'audio/aac',
-
-	// see https://github.com/misskey-dev/misskey/pull/10686
-	'audio/flac',
-	'audio/wav',
-	// backward compatibility
 	'audio/x-flac',
 	'audio/vnd.wave',
 ];
@@ -61,7 +56,6 @@ export const ROLE_POLICIES = [
 	'canSearchNotes',
 	'canHideAds',
 	'driveCapacityMb',
-	'alwaysMarkNsfw',
 	'pinLimit',
 	'antennaLimit',
 	'wordMuteLimit',

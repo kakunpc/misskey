@@ -33,11 +33,11 @@ const emit = defineEmits<{
 let file: any = $ref(null);
 
 async function choose() {
-	os.selectDriveFile(false).then((fileResponse) => {
-		file = fileResponse[0];
+	os.selectDriveFile(false).then((fileResponse: any) => {
+		file = fileResponse;
 		emit('update:modelValue', {
 			...props.modelValue,
-			fileId: file.id,
+			fileId: fileResponse.id,
 		});
 	});
 }

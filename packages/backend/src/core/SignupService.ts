@@ -13,9 +13,8 @@ import { UsedUsername } from '@/models/entities/UsedUsername.js';
 import generateUserToken from '@/misc/generate-native-user-token.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
-import UsersChart from '@/core/chart/charts/users.js';
-import { UtilityService } from '@/core/UtilityService.js';
-import { MetaService } from '@/core/MetaService.js';
+import UsersChart from './chart/charts/users.js';
+import { UtilityService } from './UtilityService.js';
 
 @Injectable()
 export class SignupService {
@@ -35,7 +34,6 @@ export class SignupService {
 		private utilityService: UtilityService,
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-		private metaService: MetaService,
 		private usersChart: UsersChart,
 	) {
 	}
@@ -46,7 +44,6 @@ export class SignupService {
 		password?: string | null;
 		passwordHash?: UserProfile['password'] | null;
 		host?: string | null;
-		ignorePreservedUsernames?: boolean;
 	}) {
 		const { username, password, passwordHash, host } = opts;
 		let hash = passwordHash;
@@ -79,17 +76,7 @@ export class SignupService {
 		if (await this.usedUsernamesRepository.findOneBy({ username: username.toLowerCase() })) {
 			throw new Error('USED_USERNAME');
 		}
-
-		const isTheFirstUser = (await this.usersRepository.countBy({ host: IsNull() })) === 0;
-
-		if (!opts.ignorePreservedUsernames && !isTheFirstUser) {
-			const instance = await this.metaService.fetch(true);
-			const isPreserved = instance.preservedUsernames.map(x => x.toLowerCase()).includes(username.toLowerCase());
-			if (isPreserved) {
-				throw new Error('USED_USERNAME');
-			}
-		}
-
+	
 		const keyPair = await new Promise<string[]>((res, rej) =>
 			generateKeyPair('rsa', {
 				modulusLength: 4096,
@@ -125,7 +112,9 @@ export class SignupService {
 				usernameLower: username.toLowerCase(),
 				host: this.utilityService.toPunyNullable(host),
 				token: secret,
-				isRoot: isTheFirstUser,
+				isRoot: (await this.usersRepository.countBy({
+					host: IsNull(),
+				})) === 0,
 			}));
 	
 			await transactionalEntityManager.save(new UserKeypair({

@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import * as mfm from 'mfm-js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import type { PartialLocalUser, LocalUser, PartialRemoteUser, RemoteUser, User } from '@/models/entities/User.js';
+import type { LocalUser, RemoteUser, User } from '@/models/entities/User.js';
 import type { IMentionedRemoteUsers, Note } from '@/models/entities/Note.js';
 import type { Blocking } from '@/models/entities/Blocking.js';
 import type { Relay } from '@/models/entities/Relay.js';
@@ -66,7 +66,7 @@ export class ApRendererService {
 	public renderAccept(object: any, user: { id: User['id']; host: null }): IAccept {
 		return {
 			type: 'Accept',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			object,
 		};
 	}
@@ -75,7 +75,7 @@ export class ApRendererService {
 	public renderAdd(user: LocalUser, target: any, object: any): IAdd {
 		return {
 			type: 'Add',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			target,
 			object,
 		};
@@ -83,7 +83,7 @@ export class ApRendererService {
 
 	@bindThis
 	public renderAnnounce(object: any, note: Note): IAnnounce {
-		const attributedTo = this.userEntityService.genLocalUserUri(note.userId);
+		const attributedTo = `${this.config.url}/users/${note.userId}`;
 
 		let to: string[] = [];
 		let cc: string[] = [];
@@ -103,7 +103,7 @@ export class ApRendererService {
 
 		return {
 			id: `${this.config.url}/notes/${note.id}/activity`,
-			actor: this.userEntityService.genLocalUserUri(note.userId),
+			actor: `${this.config.url}/users/${note.userId}`,
 			type: 'Announce',
 			published: note.createdAt.toISOString(),
 			to,
@@ -126,7 +126,7 @@ export class ApRendererService {
 		return {
 			type: 'Block',
 			id: `${this.config.url}/blocks/${block.id}`,
-			actor: this.userEntityService.genLocalUserUri(block.blockerId),
+			actor: `${this.config.url}/users/${block.blockerId}`,
 			object: block.blockee.uri,
 		};
 	}
@@ -135,7 +135,7 @@ export class ApRendererService {
 	public renderCreate(object: IObject, note: Note): ICreate {
 		const activity = {
 			id: `${this.config.url}/notes/${note.id}/activity`,
-			actor: this.userEntityService.genLocalUserUri(note.userId),
+			actor: `${this.config.url}/users/${note.userId}`,
 			type: 'Create',
 			published: note.createdAt.toISOString(),
 			object,
@@ -151,7 +151,7 @@ export class ApRendererService {
 	public renderDelete(object: IObject | string, user: { id: User['id']; host: null }): IDelete {
 		return {
 			type: 'Delete',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			object,
 			published: new Date().toISOString(),
 		};
@@ -188,7 +188,7 @@ export class ApRendererService {
 	public renderFlag(user: LocalUser, object: IObject | string, content: string): IFlag {
 		return {
 			type: 'Flag',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			content,
 			object,
 		};
@@ -199,7 +199,7 @@ export class ApRendererService {
 		return {
 			id: `${this.config.url}/activities/follow-relay/${relay.id}`,
 			type: 'Follow',
-			actor: this.userEntityService.genLocalUserUri(relayActor.id),
+			actor: `${this.config.url}/users/${relayActor.id}`,
 			object: 'https://www.w3.org/ns/activitystreams#Public',
 		};
 	}
@@ -210,21 +210,21 @@ export class ApRendererService {
 	 */
 	@bindThis
 	public async renderFollowUser(id: User['id']) {
-		const user = await this.usersRepository.findOneByOrFail({ id: id }) as PartialLocalUser | PartialRemoteUser;
-		return this.userEntityService.getUserUri(user);
+		const user = await this.usersRepository.findOneByOrFail({ id: id });
+		return this.userEntityService.isLocalUser(user) ? `${this.config.url}/users/${user.id}` : user.uri;
 	}
 
 	@bindThis
 	public renderFollow(
-		follower: PartialLocalUser | PartialRemoteUser,
-		followee: PartialLocalUser | PartialRemoteUser,
+		follower: { id: User['id']; host: User['host']; uri: User['host'] },
+		followee: { id: User['id']; host: User['host']; uri: User['host'] },
 		requestId?: string,
 	): IFollow {
 		return {
 			id: requestId ?? `${this.config.url}/follows/${follower.id}/${followee.id}`,
 			type: 'Follow',
-			actor: this.userEntityService.getUserUri(follower)!,
-			object: this.userEntityService.getUserUri(followee)!,
+			actor: this.userEntityService.isLocalUser(follower) ? `${this.config.url}/users/${follower.id}` : follower.uri!,
+			object: this.userEntityService.isLocalUser(followee) ? `${this.config.url}/users/${followee.id}` : followee.uri!,
 		};
 	}
 
@@ -252,7 +252,7 @@ export class ApRendererService {
 		return {
 			id: `${this.config.url}/users/${user.id}${postfix ?? '/publickey'}`,
 			type: 'Key',
-			owner: this.userEntityService.genLocalUserUri(user.id),
+			owner: `${this.config.url}/users/${user.id}`,
 			publicKeyPem: createPublicKey(key.publicKey).export({
 				type: 'spki',
 				format: 'pem',
@@ -284,21 +284,21 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public renderMention(mention: PartialLocalUser | PartialRemoteUser): IApMention {
+	public renderMention(mention: User): IApMention {
 		return {
 			type: 'Mention',
-			href: this.userEntityService.getUserUri(mention)!,
+			href: this.userEntityService.isRemoteUser(mention) ? mention.uri! : `${this.config.url}/users/${(mention as LocalUser).id}`,
 			name: this.userEntityService.isRemoteUser(mention) ? `@${mention.username}@${mention.host}` : `@${(mention as LocalUser).username}`,
 		};
 	}
 
 	@bindThis
 	public renderMove(
-		src: PartialLocalUser | PartialRemoteUser,
-		dst: PartialLocalUser | PartialRemoteUser,
+		src: { id: User['id']; host: User['host']; uri: User['host'] },
+		dst: { id: User['id']; host: User['host']; uri: User['host'] },
 	): IMove {
-		const actor = this.userEntityService.getUserUri(src)!;
-		const target = this.userEntityService.getUserUri(dst)!;
+		const actor = this.userEntityService.isLocalUser(src) ? `${this.config.url}/users/${src.id}` : src.uri!;
+		const target = this.userEntityService.isLocalUser(dst) ? `${this.config.url}/users/${dst.id}` : dst.uri!;
 		return {
 			id: `${this.config.url}/moves/${src.id}/${dst.id}`,
 			actor,
@@ -351,7 +351,7 @@ export class ApRendererService {
 			}
 		}
 
-		const attributedTo = this.userEntityService.genLocalUserUri(note.userId);
+		const attributedTo = `${this.config.url}/users/${note.userId}`;
 
 		const mentions = (JSON.parse(note.mentionedRemoteUsers) as IMentionedRemoteUsers).map(x => x.uri);
 
@@ -376,7 +376,7 @@ export class ApRendererService {
 		}) : [];
 
 		const hashtagTags = (note.tags ?? []).map(tag => this.renderHashtag(tag));
-		const mentionTags = mentionedUsers.map(u => this.renderMention(u as LocalUser | RemoteUser));
+		const mentionTags = mentionedUsers.map(u => this.renderMention(u));
 
 		const files = await getPromisedFiles(note.fileIds);
 
@@ -450,7 +450,7 @@ export class ApRendererService {
 
 	@bindThis
 	public async renderPerson(user: LocalUser) {
-		const id = this.userEntityService.genLocalUserUri(user.id);
+		const id = `${this.config.url}/users/${user.id}`;
 		const isSystem = !!user.username.match(/\./);
 
 		const [avatar, banner, profile] = await Promise.all([
@@ -538,7 +538,7 @@ export class ApRendererService {
 		return {
 			type: 'Question',
 			id: `${this.config.url}/questions/${note.id}`,
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			content: note.text ?? '',
 			[poll.multiple ? 'anyOf' : 'oneOf']: poll.choices.map((text, i) => ({
 				name: text,
@@ -555,7 +555,7 @@ export class ApRendererService {
 	public renderReject(object: any, user: { id: User['id'] }): IReject {
 		return {
 			type: 'Reject',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			object,
 		};
 	}
@@ -564,7 +564,7 @@ export class ApRendererService {
 	public renderRemove(user: { id: User['id'] }, target: any, object: any): IRemove {
 		return {
 			type: 'Remove',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			target,
 			object,
 		};
@@ -585,7 +585,7 @@ export class ApRendererService {
 		return {
 			type: 'Undo',
 			...(id ? { id } : {}),
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			object,
 			published: new Date().toISOString(),
 		};
@@ -595,7 +595,7 @@ export class ApRendererService {
 	public renderUpdate(object: any, user: { id: User['id'] }): IUpdate {
 		return {
 			id: `${this.config.url}/users/${user.id}#updates/${new Date().getTime()}`,
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			type: 'Update',
 			to: ['https://www.w3.org/ns/activitystreams#Public'],
 			object,
@@ -607,14 +607,14 @@ export class ApRendererService {
 	public renderVote(user: { id: User['id'] }, vote: PollVote, note: Note, poll: Poll, pollOwner: RemoteUser): ICreate {
 		return {
 			id: `${this.config.url}/users/${user.id}#votes/${vote.id}/activity`,
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: `${this.config.url}/users/${user.id}`,
 			type: 'Create',
 			to: [pollOwner.uri],
 			published: new Date().toISOString(),
 			object: {
 				id: `${this.config.url}/users/${user.id}#votes/${vote.id}`,
 				type: 'Note',
-				attributedTo: this.userEntityService.genLocalUserUri(user.id),
+				attributedTo: `${this.config.url}/users/${user.id}`,
 				to: [pollOwner.uri],
 				inReplyTo: note.uri,
 				name: poll.choices[vote.choice],

@@ -79,7 +79,10 @@ export class DeliverProcessorService {
 			// Update stats
 			this.federatedInstanceService.fetch(host).then(i => {
 				if (i.isNotResponding) {
-					this.federatedInstanceService.update(i.id, {
+					this.instancesRepository.update(i.id, {
+						isNotResponding: false,
+					});
+					this.federatedInstanceService.updateCachePartial(host, {
 						isNotResponding: false,
 					});
 				}
@@ -98,7 +101,10 @@ export class DeliverProcessorService {
 			// Update stats
 			this.federatedInstanceService.fetch(host).then(i => {
 				if (!i.isNotResponding) {
-					this.federatedInstanceService.update(i.id, {
+					this.instancesRepository.update(i.id, {
+						isNotResponding: true,
+					});
+					this.federatedInstanceService.updateCachePartial(host, {
 						isNotResponding: true,
 					});
 				}
@@ -117,7 +123,10 @@ export class DeliverProcessorService {
 					// 相手が閉鎖していることを明示しているため、配送停止する
 					if (job.data.isSharedInbox && res.statusCode === 410) {
 						this.federatedInstanceService.fetch(host).then(i => {
-							this.federatedInstanceService.update(i.id, {
+							this.instancesRepository.update(i.id, {
+								isSuspended: true,
+							});
+							this.federatedInstanceService.updateCachePartial(host, {
 								isSuspended: true,
 							});
 						});

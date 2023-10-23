@@ -3,7 +3,6 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { InstancesRepository } from '@/models/index.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { DI } from '@/di-symbols.js';
-import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -29,7 +28,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private instancesRepository: InstancesRepository,
 
 		private utilityService: UtilityService,
-		private federatedInstanceService: FederatedInstanceService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const instance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(ps.host) });
@@ -38,7 +36,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				throw new Error('instance not found');
 			}
 
-			this.federatedInstanceService.update(instance.id, {
+			this.instancesRepository.update({ host: this.utilityService.toPuny(ps.host) }, {
 				isSuspended: ps.isSuspended,
 			});
 		});

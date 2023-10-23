@@ -19,8 +19,6 @@ export const meta = {
 
 	requireCredential: true,
 
-	prohibitMoved: true,
-
 	kind: 'write:following',
 
 	errors: {

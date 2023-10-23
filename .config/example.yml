@@ -95,15 +95,15 @@ redis:
 #  #prefix: example-prefix
 #  #db: 1
 
-#   ┌───────────────────────────┐
-#───┘ MeiliSearch configuration └─────────────────────────────
+#   ┌─────────────────────────────┐
+#───┘ Elasticsearch configuration └─────────────────────────────
 
-#meilisearch:
+#elasticsearch:
 #  host: localhost
-#  port: 7700
-#  apiKey: ''
-#  ssl: true
-#  index: ''
+#  port: 9200
+#  ssl: false
+#  user: 
+#  pass: 
 
 #   ┌───────────────┐
 #───┘ ID generation └───────────────────────────────────────────
@@ -133,20 +133,16 @@ id: 'aid'
 #clusterLimit: 1
 
 # Job concurrency per worker
-#deliverJobConcurrency: 128
-#inboxJobConcurrency: 16
-#relashionshipJobConcurrency: 16
-# What's relashionshipJob?:
-#  Follow, unfollow, block and unblock(ings) while following-imports, etc. or account migrations.
+# deliverJobConcurrency: 128
+# inboxJobConcurrency: 16
 
 # Job rate limiter
-#deliverJobPerSec: 128
-#inboxJobPerSec: 16
-#relashionshipJobPerSec: 64
+# deliverJobPerSec: 128
+# inboxJobPerSec: 16
 
 # Job attempts
-#deliverJobMaxAttempts: 12
-#inboxJobMaxAttempts: 8
+# deliverJobMaxAttempts: 12
+# inboxJobMaxAttempts: 8
 
 # IP address family used for outgoing request (ipv4, ipv6 or dual)
 #outgoingAddressFamily: ipv4

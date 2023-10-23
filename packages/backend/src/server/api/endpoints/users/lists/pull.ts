@@ -12,8 +12,6 @@ export const meta = {
 
 	requireCredential: true,
 
-	prohibitMoved: true,
-
 	kind: 'write:account',
 
 	description: 'Remove a user from a list.',

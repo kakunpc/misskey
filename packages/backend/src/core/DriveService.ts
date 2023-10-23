@@ -449,12 +449,7 @@ export class DriveService {
 	}: AddFileArgs): Promise<DriveFile> {
 		let skipNsfwCheck = false;
 		const instance = await this.metaService.fetch();
-		const userRoleNSFW = user && (await this.roleService.getUserPolicies(user.id)).alwaysMarkNsfw;
-		if (user == null) {
-			skipNsfwCheck = true;
-		} else if (userRoleNSFW) {
-			skipNsfwCheck = true;
-		}
+		if (user == null) skipNsfwCheck = true;
 		if (instance.sensitiveMediaDetection === 'none') skipNsfwCheck = true;
 		if (user && instance.sensitiveMediaDetection === 'local' && this.userEntityService.isRemoteUser(user)) skipNsfwCheck = true;
 		if (user && instance.sensitiveMediaDetection === 'remote' && this.userEntityService.isLocalUser(user)) skipNsfwCheck = true;
@@ -576,7 +571,6 @@ export class DriveService {
 
 		if (info.sensitive && profile!.autoSensitive) file.isSensitive = true;
 		if (info.sensitive && instance.setSensitiveFlagAutomatically) file.isSensitive = true;
-		if (userRoleNSFW) file.isSensitive = true;
 
 		if (url !== null) {
 			file.src = url;

@@ -6,7 +6,7 @@
 	@close="dialog.close()"
 	@closed="emit('closed')"
 >
-	<template #header>{{ i18n.ts.reactionsList }}</template>
+	<template #header>{{ i18n.ts.reactions }}</template>
 
 	<MkSpacer :margin-min="20" :margin-max="28">
 		<div v-if="note" class="_gaps">
@@ -21,7 +21,7 @@
 						<span style="margin-left: 4px;">{{ note.reactions[reaction] }}</span>
 					</button>
 				</div>
-				<MkA v-for="user in users" :key="user.id" :to="userPage(user)" @click="dialog.close()">
+				<MkA v-for="user in users" :key="user.id" :to="userPage(user)">
 					<MkUserCardMini :user="user" :with-chart="false"/>
 				</MkA>
 			</template>

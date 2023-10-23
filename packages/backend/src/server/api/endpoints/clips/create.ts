@@ -12,8 +12,6 @@ export const meta = {
 
 	requireCredential: true,
 
-	prohibitMoved: true,
-
 	kind: 'write:account',
 
 	res: {
@@ -59,7 +57,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			if (currentCount > (await this.roleService.getUserPolicies(me.id)).clipLimit) {
 				throw new ApiError(meta.errors.tooManyClips);
 			}
-
+	
 			const clip = await this.clipsRepository.insert({
 				id: this.idService.genId(),
 				createdAt: new Date(),

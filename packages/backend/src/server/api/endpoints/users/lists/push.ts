@@ -12,8 +12,6 @@ export const meta = {
 
 	requireCredential: true,
 
-	prohibitMoved: true,
-
 	kind: 'write:account',
 
 	description: 'Add a user to an existing list.',

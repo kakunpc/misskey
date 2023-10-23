@@ -2,8 +2,6 @@ import path from 'path';
 import pluginReplace from '@rollup/plugin-replace';
 import pluginVue from '@vitejs/plugin-vue';
 import { type UserConfig, defineConfig } from 'vite';
-// @ts-expect-error https://github.com/sxzz/unplugin-vue-macros/issues/257#issuecomment-1410752890
-import ReactivityTransform from '@vue-macros/reactivity-transform/vite';
 
 import locales from '../../locales';
 import meta from '../../package.json';
@@ -44,15 +42,10 @@ export function getConfig(): UserConfig {
 	return {
 		base: '/vite/',
 
-		server: {
-			port: 5173,
-		},
-
 		plugins: [
 			pluginVue({
 				reactivityTransform: true,
 			}),
-			ReactivityTransform(),
 			pluginJson5(),
 			...process.env.NODE_ENV === 'production'
 				? [

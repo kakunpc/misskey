@@ -1,32 +1,47 @@
 <template>
-<span class="ceaaebcd" :class="{ [$style.isPlus]: isPlus, [$style.isMinus]: isMinus, [$style.isZero]: isZero }">
+<span class="ceaaebcd" :class="{ isPlus, isMinus, isZero }">
 	<slot name="before"></slot>{{ isPlus ? '+' : '' }}{{ number(value) }}<slot name="after"></slot>
 </span>
 </template>
 
-<script lang="ts" setup>
-import { computed } from 'vue';
+<script lang="ts">
+import { computed, defineComponent } from 'vue';
 import number from '@/filters/number';
 
-const props = defineProps<{
-	value: number;
-}>();
+export default defineComponent({
+	props: {
+		value: {
+			type: Number,
+			required: true,
+		},
+	},
 
-const isPlus = computed(() => props.value > 0);
-const isMinus = computed(() => props.value < 0);
-const isZero = computed(() => props.value === 0);
+	setup(props) {
+		const isPlus = computed(() => props.value > 0);
+		const isMinus = computed(() => props.value < 0);
+		const isZero = computed(() => props.value === 0);
+		return {
+			isPlus,
+			isMinus,
+			isZero,
+			number,
+		};
+	},
+});
 </script>
 
-<style lang="scss" module>
-.isPlus {
-	color: var(--success);
-}
+<style lang="scss" scoped>
+.ceaaebcd {
+	&.isPlus {
+		color: var(--success);
+	}
 
-.isMinus {
-	color: var(--error);
-}
+	&.isMinus {
+		color: var(--error);
+	}
 
-.isZero {
-	opacity: 0.5;
+	&.isZero {
+		opacity: 0.5;
+	}
 }
 </style>

@@ -87,7 +87,7 @@ export default defineComponent({
 		},
 
 		async openDrive() {
-			os.selectDriveFile(false);
+			os.selectDriveFile();
 		},
 
 		async selectUser() {

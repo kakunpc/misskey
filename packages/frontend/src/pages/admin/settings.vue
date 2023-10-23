@@ -13,6 +13,11 @@
 						<template #label>{{ i18n.ts.instanceDescription }}</template>
 					</MkTextarea>
 
+					<MkInput v-model="tosUrl">
+						<template #prefix><i class="ti ti-link"></i></template>
+						<template #label>{{ i18n.ts.tosUrl }}</template>
+					</MkInput>
+
 					<FormSplit :min-width="300">
 						<MkInput v-model="maintainerName">
 							<template #label>{{ i18n.ts.maintainerName }}</template>
@@ -31,6 +36,14 @@
 
 					<FormSection>
 						<div class="_gaps_s">
+							<MkSwitch v-model="enableRegistration">
+								<template #label>{{ i18n.ts.enableRegistration }}</template>
+							</MkSwitch>
+
+							<MkSwitch v-model="emailRequiredForSignup">
+								<template #label>{{ i18n.ts.emailRequiredForSignup }}</template>
+							</MkSwitch>
+
 							<MkSwitch v-model="enableChartsForRemoteUser">
 								<template #label>{{ i18n.ts.enableChartsForRemoteUser }}</template>
 							</MkSwitch>
@@ -60,9 +73,11 @@
 								<template #label>{{ i18n.ts.backgroundImageUrl }}</template>
 							</MkInput>
 
-							<MkColorInput v-model="themeColor">
+							<MkInput v-model="themeColor">
+								<template #prefix><i class="ti ti-palette"></i></template>
 								<template #label>{{ i18n.ts.themeColor }}</template>
-							</MkColorInput>
+								<template #caption>#RRGGBB</template>
+							</MkInput>
 
 							<MkTextarea v-model="defaultLightTheme">
 								<template #label>{{ i18n.ts.instanceDefaultLightTheme }}</template>
@@ -151,10 +166,10 @@ import { fetchInstance } from '@/instance';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
 import MkButton from '@/components/MkButton.vue';
-import MkColorInput from '@/components/MkColorInput.vue';
 
 let name: string | null = $ref(null);
 let description: string | null = $ref(null);
+let tosUrl: string | null = $ref(null);
 let maintainerName: string | null = $ref(null);
 let maintainerEmail: string | null = $ref(null);
 let iconUrl: string | null = $ref(null);
@@ -165,6 +180,8 @@ let defaultLightTheme: any = $ref(null);
 let defaultDarkTheme: any = $ref(null);
 let pinnedUsers: string = $ref('');
 let cacheRemoteFiles: boolean = $ref(false);
+let enableRegistration: boolean = $ref(false);
+let emailRequiredForSignup: boolean = $ref(false);
 let enableServiceWorker: boolean = $ref(false);
 let enableChartsForRemoteUser: boolean = $ref(false);
 let enableChartsForFederatedInstances: boolean = $ref(false);
@@ -177,6 +194,7 @@ async function init() {
 	const meta = await os.api('admin/meta');
 	name = meta.name;
 	description = meta.description;
+	tosUrl = meta.tosUrl;
 	iconUrl = meta.iconUrl;
 	bannerUrl = meta.bannerUrl;
 	backgroundImageUrl = meta.backgroundImageUrl;
@@ -187,6 +205,8 @@ async function init() {
 	maintainerEmail = meta.maintainerEmail;
 	pinnedUsers = meta.pinnedUsers.join('\n');
 	cacheRemoteFiles = meta.cacheRemoteFiles;
+	enableRegistration = !meta.disableRegistration;
+	emailRequiredForSignup = meta.emailRequiredForSignup;
 	enableServiceWorker = meta.enableServiceWorker;
 	enableChartsForRemoteUser = meta.enableChartsForRemoteUser;
 	enableChartsForFederatedInstances = meta.enableChartsForFederatedInstances;
@@ -200,6 +220,7 @@ function save() {
 	os.apiWithDialog('admin/update-meta', {
 		name,
 		description,
+		tosUrl,
 		iconUrl,
 		bannerUrl,
 		backgroundImageUrl,
@@ -210,6 +231,8 @@ function save() {
 		maintainerEmail,
 		pinnedUsers: pinnedUsers.split('\n'),
 		cacheRemoteFiles,
+		disableRegistration: !enableRegistration,
+		emailRequiredForSignup,
 		enableServiceWorker,
 		enableChartsForRemoteUser,
 		enableChartsForFederatedInstances,

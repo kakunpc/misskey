@@ -46,18 +46,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const query = this.queryService.makePaginationQuery(this.channelsRepository.createQueryBuilder('channel'), ps.sinceId, ps.untilId)
-				.andWhere('channel.isArchived = FALSE');
+			const query = this.queryService.makePaginationQuery(this.channelsRepository.createQueryBuilder('channel'), ps.sinceId, ps.untilId);
 
-			if (ps.query !== '') {
-				if (ps.type === 'nameAndDescription') {
-					query.andWhere(new Brackets(qb => { qb
-						.where('channel.name ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` })
-						.orWhere('channel.description ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` });
-					}));
-				} else {
-					query.andWhere('channel.name ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` });
-				}
+			if (ps.type === 'nameAndDescription') {
+				query.andWhere(new Brackets(qb => { qb
+					.where('channel.name ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` })
+					.orWhere('channel.description ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` });
+				}));
+			} else {
+				query.andWhere('channel.name ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` });
 			}
 
 			const channels = await query

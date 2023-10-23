@@ -14,6 +14,8 @@ export type UserLite = {
 	onlineStatus: 'online' | 'active' | 'offline' | 'unknown';
 	avatarUrl: string;
 	avatarBlurhash: string;
+	alsoKnownAs: string[];
+	movedToUri: any;
 	emojis: {
 		name: string;
 		url: string;
@@ -29,7 +31,6 @@ export type UserLite = {
 };
 
 export type UserDetailed = UserLite & {
-	alsoKnownAs: string[];
 	bannerBlurhash: string | null;
 	bannerColor: string | null;
 	bannerUrl: string | null;
@@ -57,7 +58,6 @@ export type UserDetailed = UserLite & {
 	lang: string | null;
 	lastFetchedAt?: DateString;
 	location: string | null;
-	movedTo: string;
 	notesCount: number;
 	pinnedNoteIds: ID[];
 	pinnedNotes: Note[];
@@ -317,7 +317,6 @@ export type LiteInstanceMetadata = {
 		imageUrl: string;
 	}[];
 	translatorAvailable: boolean;
-	serverRules: string[];
 };
 
 export type DetailedInstanceMetadata = LiteInstanceMetadata & {

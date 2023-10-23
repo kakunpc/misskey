@@ -9,8 +9,6 @@ export const meta = {
 
 	requireCredential: true,
 
-	prohibitMoved: true,
-
 	kind: 'write:channels',
 
 	errors: {

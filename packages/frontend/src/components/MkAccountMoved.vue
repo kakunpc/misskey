@@ -1,8 +1,8 @@
 <template>
-<div v-if="user" :class="$style.root">
+<div :class="$style.root">
 	<i class="ti ti-plane-departure" style="margin-right: 8px;"></i>
 	{{ i18n.ts.accountMoved }}
-	<MkMention :class="$style.link" :username="user.username" :host="user.host ?? localHost"/>
+	<MkMention :class="$style.link" :username="username" :host="host ?? localHost"/>
 </div>
 </template>
 
@@ -10,17 +10,11 @@
 import MkMention from './MkMention.vue';
 import { i18n } from '@/i18n';
 import { host as localHost } from '@/config';
-import { ref } from 'vue';
-import { UserLite } from 'misskey-js/built/entities';
-import { api } from '@/os';
 
-const user = ref<UserLite>();
-
-const props = defineProps<{
-	movedTo: string; // user id
+defineProps<{
+	username: string;
+	host: string;
 }>();
-
-api('users/show', { userId: props.movedTo }).then(u => user.value = u);
 </script>
 
 <style lang="scss" module>
