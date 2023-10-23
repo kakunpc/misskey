@@ -1,7 +1,7 @@
 <template>
 <MkStickyContainer>
 	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="600" :marginMin="16">
+	<MkSpacer :content-max="600" :margin-min="16">
 		<div class="_gaps_m">
 			<FormSplit>
 				<MkKeyValue>
@@ -93,3 +93,6 @@ definePageMetadata({
 	icon: 'ti ti-adjustments',
 });
 </script>
+
+<style lang="scss" scoped>
+</style>

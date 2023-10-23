@@ -11,16 +11,16 @@
 	<div style="overflow-x: clip;">
 		<Transition
 			mode="out-in"
-			:enterActiveClass="$style.transition_x_enterActive"
-			:leaveActiveClass="$style.transition_x_leaveActive"
-			:enterFromClass="$style.transition_x_enterFrom"
-			:leaveToClass="$style.transition_x_leaveTo"
+			:enter-active-class="$style.transition_x_enterActive"
+			:leave-active-class="$style.transition_x_leaveActive"
+			:enter-from-class="$style.transition_x_enterFrom"
+			:leave-to-class="$style.transition_x_leaveTo"
 		>
 			<template v-if="!isAcceptedServerRule">
 				<XServerRules @done="isAcceptedServerRule = true" @cancel="dialog.close()"/>
 			</template>
 			<template v-else>
-				<XSignup :autoSet="autoSet" @signup="onSignup" @signupEmailPending="onSignupEmailPending"/>
+				<XSignup :auto-set="autoSet" @signup="onSignup" @signup-email-pending="onSignupEmailPending"/>
 			</template>
 		</Transition>
 	</div>

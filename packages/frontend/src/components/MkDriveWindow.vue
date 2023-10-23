@@ -1,15 +1,15 @@
 <template>
 <MkWindow
 	ref="window"
-	:initialWidth="800"
-	:initialHeight="500"
-	:canResize="true"
+	:initial-width="800"
+	:initial-height="500"
+	:can-resize="true"
 	@closed="emit('closed')"
 >
 	<template #header>
 		{{ i18n.ts.drive }}
 	</template>
-	<XDrive :initialFolder="initialFolder"/>
+	<XDrive :initial-folder="initialFolder"/>
 </MkWindow>
 </template>
 

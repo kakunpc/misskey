@@ -1,8 +1,8 @@
 <template>
-<XColumn :column="column" :isStacked="isStacked" :menu="menu">
+<XColumn :column="column" :is-stacked="isStacked" :menu="menu" @parent-focus="$event => emit('parent-focus', $event)">
 	<template #header><i class="ti ti-bell" style="margin-right: 8px;"></i>{{ column.name }}</template>
 
-	<XNotifications :includeTypes="column.includingTypes"/>
+	<XNotifications :include-types="column.includingTypes"/>
 </XColumn>
 </template>
 
@@ -17,6 +17,10 @@ import { i18n } from '@/i18n';
 const props = defineProps<{
 	column: Column;
 	isStacked: boolean;
+}>();
+
+const emit = defineEmits<{
+	(ev: 'parent-focus', direction: 'up' | 'down' | 'left' | 'right'): void;
 }>();
 
 function func() {

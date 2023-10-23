@@ -359,12 +359,7 @@ export class ApiCallService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public dispose(): void {
+	public onApplicationShutdown(signal?: string | undefined) {
 		clearInterval(this.userIpHistoriesClearIntervalId);
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }

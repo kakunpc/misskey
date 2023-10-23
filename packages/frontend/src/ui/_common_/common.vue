@@ -10,20 +10,12 @@
 <XUpload v-if="uploads.length > 0"/>
 
 <TransitionGroup
-	tag="div"
-	:class="[$style.notifications, {
-		[$style.notificationsPosition_leftTop]: defaultStore.state.notificationPosition === 'leftTop',
-		[$style.notificationsPosition_leftBottom]: defaultStore.state.notificationPosition === 'leftBottom',
-		[$style.notificationsPosition_rightTop]: defaultStore.state.notificationPosition === 'rightTop',
-		[$style.notificationsPosition_rightBottom]: defaultStore.state.notificationPosition === 'rightBottom',
-		[$style.notificationsStackAxis_vertical]: defaultStore.state.notificationStackAxis === 'vertical',
-		[$style.notificationsStackAxis_horizontal]: defaultStore.state.notificationStackAxis === 'horizontal',
-	}]"
-	:moveClass="defaultStore.state.animation ? $style.transition_notification_move : ''"
-	:enterActiveClass="defaultStore.state.animation ? $style.transition_notification_enterActive : ''"
-	:leaveActiveClass="defaultStore.state.animation ? $style.transition_notification_leaveActive : ''"
-	:enterFromClass="defaultStore.state.animation ? $style.transition_notification_enterFrom : ''"
-	:leaveToClass="defaultStore.state.animation ? $style.transition_notification_leaveTo : ''"
+	tag="div" :class="[$style.notifications, $style[`notificationsPosition-${defaultStore.state.notificationPosition}`], $style[`notificationsStackAxis-${defaultStore.state.notificationStackAxis}`]]"
+	:move-class="defaultStore.state.animation ? $style.transition_notification_move : ''"
+	:enter-active-class="defaultStore.state.animation ? $style.transition_notification_enterActive : ''"
+	:leave-active-class="defaultStore.state.animation ? $style.transition_notification_leaveActive : ''"
+	:enter-from-class="defaultStore.state.animation ? $style.transition_notification_enterFrom : ''"
+	:leave-to-class="defaultStore.state.animation ? $style.transition_notification_leaveTo : ''"
 >
 	<div v-for="notification in notifications" :key="notification.id" :class="$style.notification">
 		<XNotification :notification="notification"/>
@@ -48,7 +40,7 @@ import { popups, pendingApiRequestsCount } from '@/os';
 import { uploads } from '@/scripts/upload';
 import * as sound from '@/scripts/sound';
 import { $i } from '@/account';
-import { useStream } from '@/stream';
+import { stream } from '@/stream';
 import { i18n } from '@/i18n';
 import { defaultStore } from '@/store';
 
@@ -63,7 +55,7 @@ function onNotification(notification) {
 	if ($i.mutingNotificationTypes.includes(notification.type)) return;
 
 	if (document.visibilityState === 'visible') {
-		useStream().send('readNotification');
+		stream.send('readNotification');
 
 		notifications.unshift(notification);
 		window.setTimeout(() => {
@@ -79,7 +71,7 @@ function onNotification(notification) {
 }
 
 if ($i) {
-	const connection = useStream().useChannel('main', null, 'UI');
+	const connection = stream.useChannel('main', null, 'UI');
 	connection.on('notification', onNotification);
 
 	//#region Listen message from SW
@@ -111,31 +103,31 @@ if ($i) {
 	pointer-events: none;
 	display: flex;
 
-	&.notificationsPosition_leftTop {
+	&.notificationsPosition-leftTop {
 		top: var(--margin);
 		left: 0;
 	}
 
-	&.notificationsPosition_rightTop {
+	&.notificationsPosition-rightTop {
 		top: var(--margin);
 		right: 0;
 	}
 
-	&.notificationsPosition_leftBottom {
+	&.notificationsPosition-leftBottom {
 		bottom: calc(var(--minBottomSpacing) + var(--margin));
 		left: 0;
 	}
 
-	&.notificationsPosition_rightBottom {
+	&.notificationsPosition-rightBottom {
 		bottom: calc(var(--minBottomSpacing) + var(--margin));
 		right: 0;
 	}
 
-	&.notificationsStackAxis_vertical {
+	&.notificationsStackAxis-vertical {
 		width: 250px;
 
-		&.notificationsPosition_leftTop,
-		&.notificationsPosition_rightTop {
+		&.notificationsPosition-leftTop,
+		&.notificationsPosition-rightTop {
 			flex-direction: column;
 
 			.notification {
@@ -145,8 +137,8 @@ if ($i) {
 			}
 		}
 
-		&.notificationsPosition_leftBottom,
-		&.notificationsPosition_rightBottom {
+		&.notificationsPosition-leftBottom,
+		&.notificationsPosition-rightBottom {
 			flex-direction: column-reverse;
 
 			.notification {
@@ -157,11 +149,11 @@ if ($i) {
 		}
 	}
 
-	&.notificationsStackAxis_horizontal {
+	&.notificationsStackAxis-horizontal {
 		width: 100%;
 
-		&.notificationsPosition_leftTop,
-		&.notificationsPosition_leftBottom {
+		&.notificationsPosition-leftTop,
+		&.notificationsPosition-leftBottom {
 			flex-direction: row;
 
 			.notification {
@@ -171,8 +163,8 @@ if ($i) {
 			}
 		}
 
-		&.notificationsPosition_rightTop,
-		&.notificationsPosition_rightBottom {
+		&.notificationsPosition-rightTop,
+		&.notificationsPosition-rightBottom {
 			flex-direction: row-reverse;
 
 			.notification {

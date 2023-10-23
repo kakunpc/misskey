@@ -1,6 +1,5 @@
 import { IsNull, LessThanOrEqual, MoreThan } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
-import JSON5 from 'json5';
 import type { AdsRepository, UsersRepository } from '@/models/index.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
@@ -124,17 +123,10 @@ export const meta = {
 				type: 'string',
 				optional: false, nullable: false,
 			},
-			serverErrorImageUrl: {
+			errorImageUrl: {
 				type: 'string',
-				optional: false, nullable: true,
-			},
-			infoImageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			notFoundImageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
+				optional: false, nullable: false,
+				default: 'https://xn--931a.moe/aiart/yubitun.png',
 			},
 			iconUrl: {
 				type: 'string',
@@ -295,16 +287,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				themeColor: instance.themeColor,
 				mascotImageUrl: instance.mascotImageUrl,
 				bannerUrl: instance.bannerUrl,
-				infoImageUrl: instance.infoImageUrl,
-				serverErrorImageUrl: instance.serverErrorImageUrl,
-				notFoundImageUrl: instance.notFoundImageUrl,
+				errorImageUrl: instance.errorImageUrl,
 				iconUrl: instance.iconUrl,
 				backgroundImageUrl: instance.backgroundImageUrl,
 				logoImageUrl: instance.logoImageUrl,
 				maxNoteTextLength: MAX_NOTE_TEXT_LENGTH,
-				// クライアントの手間を減らすためあらかじめJSONに変換しておく
-				defaultLightTheme: instance.defaultLightTheme ? JSON.stringify(JSON5.parse(instance.defaultLightTheme)) : null,
-				defaultDarkTheme: instance.defaultDarkTheme ? JSON.stringify(JSON5.parse(instance.defaultDarkTheme)) : null,
+				defaultLightTheme: instance.defaultLightTheme,
+				defaultDarkTheme: instance.defaultDarkTheme,
 				ads: ads.map(ad => ({
 					id: ad.id,
 					url: ad.url,

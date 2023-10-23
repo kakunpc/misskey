@@ -1,9 +1,9 @@
 <template>
 <MkStickyContainer>
 	<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="800">
+	<MkSpacer :content-max="800">
 		<div v-if="tab === 'all'">
-			<XNotifications class="notifications" :includeTypes="includeTypes"/>
+			<XNotifications class="notifications" :include-types="includeTypes"/>
 		</div>
 		<div v-else-if="tab === 'mentions'">
 			<MkNotes :pagination="mentionsPagination"/>

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { UserListsRepository, UserListFavoritesRepository } from '@/models/index.js';
+import type { UserListsRepository } from '@/models/index.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { UserListEntityService } from '@/core/entities/UserListEntityService.js';
 import { DI } from '@/di-symbols.js';
@@ -8,7 +8,7 @@ import { ApiError } from '../../../error.js';
 export const meta = {
 	tags: ['lists', 'account'],
 
-	requireCredential: false,
+	requireCredential: true,
 
 	kind: 'read:account',
 
@@ -33,54 +33,31 @@ export const paramDef = {
 	type: 'object',
 	properties: {
 		listId: { type: 'string', format: 'misskey:id' },
-		forPublic: { type: 'boolean', default: false },
 	},
 	required: ['listId'],
 } as const;
 
-@Injectable() // eslint-disable-next-line import/no-default-export
+// eslint-disable-next-line import/no-default-export
+@Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
 		private userListsRepository: UserListsRepository,
 
-		@Inject(DI.userListFavoritesRepository)
-		private userListFavoritesRepository: UserListFavoritesRepository,
-
 		private userListEntityService: UserListEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const additionalProperties: Partial<{ likedCount: number, isLiked: boolean }> = {};
 			// Fetch the list
-			const userList = await this.userListsRepository.findOneBy(!ps.forPublic && me !== null ? {
+			const userList = await this.userListsRepository.findOneBy({
 				id: ps.listId,
 				userId: me.id,
-			} : {
-				id: ps.listId,
-				isPublic: true,
 			});
 
 			if (userList == null) {
 				throw new ApiError(meta.errors.noSuchList);
 			}
 
-			if (ps.forPublic && userList.isPublic) {
-				additionalProperties.likedCount = await this.userListFavoritesRepository.countBy({
-					userListId: ps.listId,
-				});
-				if (me !== null) {
-					additionalProperties.isLiked = (await this.userListFavoritesRepository.findOneBy({
-						userId: me.id,
-						userListId: ps.listId,
-					}) !== null);
-				} else {
-					additionalProperties.isLiked = false;
-				}
-			}
-			return {
-				...await this.userListEntityService.pack(userList),
-				...additionalProperties,
-			};
+			return await this.userListEntityService.pack(userList);
 		});
 	}
 }

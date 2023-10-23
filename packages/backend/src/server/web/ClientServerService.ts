@@ -26,7 +26,7 @@ import { PageEntityService } from '@/core/entities/PageEntityService.js';
 import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityService.js';
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
-import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPostsRepository, Meta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/index.js';
+import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPostsRepository, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/index.js';
 import type Logger from '@/logger.js';
 import { deepClone } from '@/misc/clone.js';
 import { bindThis } from '@/decorators.js';
@@ -115,18 +115,6 @@ export class ClientServerService {
 
 		reply.header('Cache-Control', 'max-age=300');
 		return (res);
-	}
-
-	@bindThis
-	private generateCommonPugData(meta: Meta) {
-		return {
-			instanceName: meta.name ?? 'Misskey',
-			icon: meta.iconUrl,
-			themeColor: meta.themeColor,
-			serverErrorImageUrl: meta.serverErrorImageUrl ?? 'https://xn--931a.moe/assets/error.jpg',
-			infoImageUrl: meta.infoImageUrl ?? 'https://xn--931a.moe/assets/info.jpg',
-			notFoundImageUrl: meta.notFoundImageUrl ?? 'https://xn--931a.moe/assets/not-found.jpg',
-		};
 	}
 
 	@bindThis
@@ -353,10 +341,12 @@ export class ClientServerService {
 			reply.header('Cache-Control', 'public, max-age=30');
 			return await reply.view('base', {
 				img: meta.bannerUrl,
-				url: this.config.url,
 				title: meta.name ?? 'Misskey',
+				instanceName: meta.name ?? 'Misskey',
+				url: this.config.url,
 				desc: meta.description,
-				...this.generateCommonPugData(meta),
+				icon: meta.iconUrl,
+				themeColor: meta.themeColor,
 			});
 		};
 
@@ -441,7 +431,9 @@ export class ClientServerService {
 					user, profile, me,
 					avatarUrl: user.avatarUrl ?? this.userEntityService.getIdenticonUrl(user),
 					sub: request.params.sub,
-					...this.generateCommonPugData(meta),
+					instanceName: meta.name ?? 'Misskey',
+					icon: meta.iconUrl,
+					themeColor: meta.themeColor,
 				});
 			} else {
 				// リモートユーザーなので
@@ -489,7 +481,9 @@ export class ClientServerService {
 					avatarUrl: _note.user.avatarUrl,
 					// TODO: Let locale changeable by instance setting
 					summary: getNoteSummary(_note),
-					...this.generateCommonPugData(meta),
+					instanceName: meta.name ?? 'Misskey',
+					icon: meta.iconUrl,
+					themeColor: meta.themeColor,
 				});
 			} else {
 				return await renderBase(reply);
@@ -528,7 +522,9 @@ export class ClientServerService {
 					page: _page,
 					profile,
 					avatarUrl: _page.user.avatarUrl,
-					...this.generateCommonPugData(meta),
+					instanceName: meta.name ?? 'Misskey',
+					icon: meta.iconUrl,
+					themeColor: meta.themeColor,
 				});
 			} else {
 				return await renderBase(reply);
@@ -554,7 +550,9 @@ export class ClientServerService {
 					flash: _flash,
 					profile,
 					avatarUrl: _flash.user.avatarUrl,
-					...this.generateCommonPugData(meta),
+					instanceName: meta.name ?? 'Misskey',
+					icon: meta.iconUrl,
+					themeColor: meta.themeColor,
 				});
 			} else {
 				return await renderBase(reply);
@@ -580,7 +578,9 @@ export class ClientServerService {
 					clip: _clip,
 					profile,
 					avatarUrl: _clip.user.avatarUrl,
-					...this.generateCommonPugData(meta),
+					instanceName: meta.name ?? 'Misskey',
+					icon: meta.iconUrl,
+					themeColor: meta.themeColor,
 				});
 			} else {
 				return await renderBase(reply);
@@ -604,7 +604,9 @@ export class ClientServerService {
 					post: _post,
 					profile,
 					avatarUrl: _post.user.avatarUrl,
-					...this.generateCommonPugData(meta),
+					instanceName: meta.name ?? 'Misskey',
+					icon: meta.iconUrl,
+					themeColor: meta.themeColor,
 				});
 			} else {
 				return await renderBase(reply);
@@ -623,7 +625,9 @@ export class ClientServerService {
 				reply.header('Cache-Control', 'public, max-age=15');
 				return await reply.view('channel', {
 					channel: _channel,
-					...this.generateCommonPugData(meta),
+					instanceName: meta.name ?? 'Misskey',
+					icon: meta.iconUrl,
+					themeColor: meta.themeColor,
 				});
 			} else {
 				return await renderBase(reply);

@@ -1,5 +1,5 @@
 <template>
-<MkSpacer :contentMax="800">
+<MkSpacer :content-max="800">
 	<MkTab v-model="tab" style="margin-bottom: var(--margin);">
 		<option value="notes">{{ i18n.ts.notes }}</option>
 		<option value="polls">{{ i18n.ts.poll }}</option>

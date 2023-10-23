@@ -1,7 +1,7 @@
 <template>
-<MkSpacer :contentMax="700">
+<MkSpacer :content-max="700">
 	<MkPagination v-slot="{items}" :pagination="pagination">
-		<div :class="$style.root">
+		<div class="jrnovfpt">
 			<MkGalleryPostPreview v-for="post in items" :key="post.id" :post="post" class="post"/>
 		</div>
 	</MkPagination>
@@ -28,8 +28,8 @@ const pagination = {
 };
 </script>
 
-<style lang="scss" module>
-.root {
+<style lang="scss" scoped>
+.jrnovfpt {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 	grid-gap: 12px;

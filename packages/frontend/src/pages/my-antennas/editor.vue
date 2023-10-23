@@ -1,6 +1,6 @@
 <template>
-<MkSpacer :contentMax="700">
-	<div>
+<MkSpacer :content-max="700">
+	<div class="shaynizk">
 		<div class="_gaps_m">
 			<MkInput v-model="name">
 				<template #label>{{ i18n.ts.name }}</template>
@@ -33,7 +33,7 @@
 			<MkSwitch v-model="withFile">{{ i18n.ts.withFileAntenna }}</MkSwitch>
 			<MkSwitch v-model="notify">{{ i18n.ts.notifyAntenna }}</MkSwitch>
 		</div>
-		<div :class="$style.actions">
+		<div class="actions">
 			<MkButton inline primary @click="saveAntenna()"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
 			<MkButton v-if="antenna.id != null" inline danger @click="deleteAntenna()"><i class="ti ti-trash"></i> {{ i18n.ts.delete }}</MkButton>
 		</div>
@@ -128,10 +128,12 @@ function addUser() {
 }
 </script>
 
-<style lang="scss" module>
-.actions {
-	margin-top: 16px;
-	padding: 24px 0;
-	border-top: solid 0.5px var(--divider);
+<style lang="scss" scoped>
+.shaynizk {
+	> .actions {
+		margin-top: 16px;
+		padding: 24px 0;
+		border-top: solid 0.5px var(--divider);
+	}
 }
 </style>

@@ -152,13 +152,7 @@ export class NotificationService implements OnApplicationShutdown {
 		*/
 	}
 
-	@bindThis
-	public dispose(): void {
+	onApplicationShutdown(signal?: string | undefined): void {
 		this.#shutdownController.abort();
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }

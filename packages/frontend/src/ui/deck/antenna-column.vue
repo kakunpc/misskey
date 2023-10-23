@@ -1,10 +1,10 @@
 <template>
-<XColumn :menu="menu" :column="column" :isStacked="isStacked">
+<XColumn :menu="menu" :column="column" :is-stacked="isStacked" @parent-focus="$event => emit('parent-focus', $event)">
 	<template #header>
 		<i class="ti ti-antenna"></i><span style="margin-left: 8px;">{{ column.name }}</span>
 	</template>
 
-	<MkTimeline v-if="column.antennaId" ref="timeline" src="antenna" :antenna="column.antennaId"/>
+	<MkTimeline v-if="column.antennaId" ref="timeline" src="antenna" :antenna="column.antennaId" @after="() => emit('loaded')"/>
 </XColumn>
 </template>
 
@@ -19,6 +19,11 @@ import { i18n } from '@/i18n';
 const props = defineProps<{
 	column: Column;
 	isStacked: boolean;
+}>();
+
+const emit = defineEmits<{
+	(ev: 'loaded'): void;
+	(ev: 'parent-focus', direction: 'up' | 'down' | 'left' | 'right'): void;
 }>();
 
 let timeline = $shallowRef<InstanceType<typeof MkTimeline>>();

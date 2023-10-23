@@ -1,12 +1,12 @@
 <template>
-<div ref="rootEl" class="_panel" :class="[$style.root, { [$style.naked]: naked, [$style.thin]: thin, [$style.scrollable]: scrollable }]">
+<div ref="rootEl" class="_panel" :class="[$style.root, { [$style.naked]: naked, [$style.thin]: thin, [$style.hideHeader]: !showHeader, [$style.scrollable]: scrollable, [$style.closed]: !showBody }]">
 	<header v-if="showHeader" ref="headerEl" :class="$style.header">
 		<div :class="$style.title">
 			<span :class="$style.titleIcon"><slot name="icon"></slot></span>
 			<slot name="header"></slot>
 		</div>
 		<div :class="$style.headerSub">
-			<slot name="func" :buttonStyleClass="$style.headerButton"></slot>
+			<slot name="func" :button-style-class="$style.headerButton"></slot>
 			<button v-if="foldable" :class="$style.headerButton" class="_button" @click="() => showBody = !showBody">
 				<template v-if="showBody"><i class="ti ti-chevron-up"></i></template>
 				<template v-else><i class="ti ti-chevron-down"></i></template>
@@ -14,14 +14,14 @@
 		</div>
 	</header>
 	<Transition
-		:enterActiveClass="defaultStore.state.animation ? $style.transition_toggle_enterActive : ''"
-		:leaveActiveClass="defaultStore.state.animation ? $style.transition_toggle_leaveActive : ''"
-		:enterFromClass="defaultStore.state.animation ? $style.transition_toggle_enterFrom : ''"
-		:leaveToClass="defaultStore.state.animation ? $style.transition_toggle_leaveTo : ''"
+		:enter-active-class="defaultStore.state.animation ? $style.transition_toggle_enterActive : ''"
+		:leave-active-class="defaultStore.state.animation ? $style.transition_toggle_leaveActive : ''"
+		:enter-from-class="defaultStore.state.animation ? $style.transition_toggle_enterFrom : ''"
+		:leave-to-class="defaultStore.state.animation ? $style.transition_toggle_leaveTo : ''"
 		@enter="enter"
-		@afterEnter="afterEnter"
+		@after-enter="afterEnter"
 		@leave="leave"
-		@afterLeave="afterLeave"
+		@after-leave="afterLeave"
 	>
 		<div v-show="showBody" ref="contentEl" :class="[$style.content, { [$style.omitted]: omitted }]">
 			<slot></slot>
@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
+import { onMounted, ref, shallowRef, watch } from 'vue';
 import { defaultStore } from '@/store';
 import { i18n } from '@/i18n';
 
@@ -83,19 +83,13 @@ function afterLeave(el) {
 
 const calcOmit = () => {
 	if (omitted.value || ignoreOmit.value || props.maxHeight == null) return;
-	if (!contentEl.value) return;
 	const height = contentEl.value.offsetHeight;
 	omitted.value = height > props.maxHeight;
 };
 
-const omitObserver = new ResizeObserver((entries, observer) => {
-	calcOmit();
-});
-
 onMounted(() => {
 	watch(showBody, v => {
-		if (!rootEl.value) return;
-		const headerHeight = props.showHeader ? headerEl.value?.offsetHeight ?? 0 : 0;
+		const headerHeight = props.showHeader ? headerEl.value.offsetHeight : 0;
 		rootEl.value.style.minHeight = `${headerHeight}px`;
 		if (v) {
 			rootEl.value.style.flexBasis = 'auto';
@@ -106,15 +100,13 @@ onMounted(() => {
 		immediate: true,
 	});
 
-	if (rootEl.value) rootEl.value.style.setProperty('--maxHeight', props.maxHeight + 'px');
+	rootEl.value.style.setProperty('--maxHeight', props.maxHeight + 'px');
 
 	calcOmit();
 
-	if (contentEl.value) omitObserver.observe(contentEl.value);
-});
-
-onUnmounted(() => {
-	omitObserver.disconnect();
+	new ResizeObserver((entries, observer) => {
+		calcOmit();
+	}).observe(contentEl.value);
 });
 </script>
 

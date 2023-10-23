@@ -1,14 +1,13 @@
 <template>
-<MkWindow
-	ref="window"
-	:initialWidth="300"
-	:initialHeight="290"
-	:canResize="true"
+<MkWindow ref="window"
+	:initial-width="300"
+	:initial-height="290"
+	:can-resize="true"
 	:mini="true"
 	:front="true"
 	@closed="emit('closed')"
 >
-	<MkEmojiPicker :showPinned="showPinned" :asReactionPicker="asReactionPicker" asWindow :class="$style.picker" @chosen="chosen"/>
+	<MkEmojiPicker :show-pinned="showPinned" :as-reaction-picker="asReactionPicker" as-window :class="$style.picker" @chosen="chosen"/>
 </MkWindow>
 </template>
 

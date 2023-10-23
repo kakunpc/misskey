@@ -1,17 +1,17 @@
 <template>
 <MkStickyContainer>
 	<template #header><MkPageHeader/></template>
-	<MkSpacer :contentMax="800">
+	<MkSpacer :content-max="800">
 		<MkPagination :pagination="pagination">
 			<template #empty>
 				<div class="_fullinfo">
-					<img :src="infoImageUrl" class="_ghost"/>
+					<img src="https://xn--931a.moe/assets/info.jpg" class="_ghost"/>
 					<div>{{ i18n.ts.noNotes }}</div>
 				</div>
 			</template>
 
 			<template #default="{ items }">
-				<MkDateSeparatedList v-slot="{ item }" :items="items" :direction="'down'" :noGap="false" :ad="false">
+				<MkDateSeparatedList v-slot="{ item }" :items="items" :direction="'down'" :no-gap="false" :ad="false">
 					<MkNote :key="item.id" :note="item.note" :class="$style.note"/>
 				</MkDateSeparatedList>
 			</template>
@@ -26,7 +26,6 @@ import MkNote from '@/components/MkNote.vue';
 import MkDateSeparatedList from '@/components/MkDateSeparatedList.vue';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
-import { infoImageUrl } from '@/instance';
 
 const pagination = {
 	endpoint: 'i/favorites' as const,

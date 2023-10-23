@@ -60,7 +60,7 @@ export function applyTheme(theme: Theme, persist = true) {
 		document.documentElement.classList.remove('_themeChanging_');
 	}, 1000);
 
-	const colorScheme = theme.base === 'dark' ? 'dark' : 'light';
+	const colorSchema = theme.base === 'dark' ? 'dark' : 'light';
 
 	// Deep copy
 	const _theme = deepClone(theme);
@@ -83,11 +83,11 @@ export function applyTheme(theme: Theme, persist = true) {
 		document.documentElement.style.setProperty(`--${k}`, v.toString());
 	}
 
-	document.documentElement.style.setProperty('color-scheme', colorScheme);
+	document.documentElement.style.setProperty('color-schema', colorSchema);
 
 	if (persist) {
 		miLocalStorage.setItem('theme', JSON.stringify(props));
-		miLocalStorage.setItem('colorScheme', colorScheme);
+		miLocalStorage.setItem('colorSchema', colorSchema);
 	}
 
 	// 色計算など再度行えるようにクライアント全体に通知

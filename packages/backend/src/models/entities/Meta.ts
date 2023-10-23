@@ -101,25 +101,13 @@ export class Meta {
 		length: 1024,
 		nullable: true,
 	})
+	public errorImageUrl: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
 	public iconUrl: string | null;
-
-	@Column('varchar', {
-		length: 1024,
-		nullable: true,
-	})
-	public serverErrorImageUrl: string | null;
-
-	@Column('varchar', {
-		length: 1024,
-		nullable: true,
-	})
-	public notFoundImageUrl: string | null;
-
-	@Column('varchar', {
-		length: 1024,
-		nullable: true,
-	})
-	public infoImageUrl: string | null;
 
 	@Column('boolean', {
 		default: true,

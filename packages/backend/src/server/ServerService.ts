@@ -194,7 +194,7 @@ export class ServerService implements OnApplicationShutdown {
 
 		fastify.register(this.clientServerService.createServer);
 
-		this.streamingApiServerService.attach(fastify.server);
+		this.streamingApiServerService.attachStreamingApi(fastify.server);
 
 		fastify.server.on('error', err => {
 			switch ((err as any).code) {
@@ -222,14 +222,7 @@ export class ServerService implements OnApplicationShutdown {
 		await fastify.ready();
 	}
 
-	@bindThis
-	public async dispose(): Promise<void> {
-    await this.streamingApiServerService.detach();
-		await this.#fastify.close();
-	}
-
-	@bindThis
 	async onApplicationShutdown(signal: string): Promise<void> {
-		await this.dispose();
+		await this.#fastify.close();
 	}
 }

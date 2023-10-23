@@ -63,13 +63,8 @@ export class ServerStatsService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public dispose(): void {
+	public onApplicationShutdown(signal?: string | undefined) {
 		clearInterval(this.intervalId);
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }
 

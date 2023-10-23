@@ -1,7 +1,7 @@
 <template>
-<MkSpacer :contentMax="700">
+<MkSpacer :content-max="700">
 	<div class="_gaps_s">
-		<MkRolePreview v-for="role in roles" :key="role.id" :role="role" :forModeration="false"/>
+		<MkRolePreview v-for="role in roles" :key="role.id" :role="role" :for-moderation="false"/>
 	</div>
 </MkSpacer>
 </template>

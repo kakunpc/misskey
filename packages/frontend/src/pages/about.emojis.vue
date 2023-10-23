@@ -1,5 +1,5 @@
 <template>
-<div class="_gaps">
+<div class="driuhtrh _gaps">
 	<MkButton v-if="$i && ($i.isModerator || $i.policies.canManageCustomEmojis)" primary link to="/custom-emojis-manager">{{ i18n.ts.manageCustomEmojis }}</MkButton>
 
 	<div class="query">
@@ -14,17 +14,17 @@
 		-->
 	</div>
 
-	<MkFoldableSection v-if="searchEmojis">
+	<MkFoldableSection v-if="searchEmojis" class="emojis">
 		<template #header>{{ i18n.ts.searchResult }}</template>
-		<div :class="$style.emojis">
-			<XEmoji v-for="emoji in searchEmojis" :key="emoji.name" :emoji="emoji"/>
+		<div class="zuvgdzyt">
+			<XEmoji v-for="emoji in searchEmojis" :key="emoji.name" class="emoji" :emoji="emoji"/>
 		</div>
 	</MkFoldableSection>
 	
-	<MkFoldableSection v-for="category in customEmojiCategories" v-once :key="category">
+	<MkFoldableSection v-for="category in customEmojiCategories" v-once :key="category" class="emojis">
 		<template #header>{{ category || i18n.ts.other }}</template>
-		<div :class="$style.emojis">
-			<XEmoji v-for="emoji in customEmojis.filter(e => e.category === category)" :key="emoji.name" :emoji="emoji"/>
+		<div class="zuvgdzyt">
+			<XEmoji v-for="emoji in customEmojis.filter(e => e.category === category)" :key="emoji.name" class="emoji" :emoji="emoji"/>
 		</div>
 	</MkFoldableSection>
 </div>
@@ -57,7 +57,7 @@ function search() {
 
 		if (queryarry) {
 			searchEmojis = customEmojis.value.filter(emoji => 
-				queryarry.includes(`:${emoji.name}:`),
+				queryarry.includes(`:${emoji.name}:`)
 			);
 		} else {
 			searchEmojis = customEmojis.value.filter(emoji => emoji.name.includes(q) || emoji.aliases.includes(q));
@@ -84,10 +84,36 @@ watch($$(selectedTags), () => {
 }, { deep: true });
 </script>
 
-<style lang="scss" module>
-.emojis {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-	grid-gap: 12px;
+<style lang="scss" scoped>
+.driuhtrh {
+	background: var(--bg);
+
+	> .query {
+		background: var(--bg);
+
+		> .tags {
+			> .tag {
+				display: inline-block;
+				margin: 8px 8px 0 0;
+				padding: 4px 8px;
+				font-size: 0.9em;
+				background: var(--accentedBg);
+				border-radius: 5px;
+
+				&.active {
+					background: var(--accent);
+					color: var(--fgOnAccent);
+				}
+			}
+		}
+	}
+
+	> .emojis {
+		.zuvgdzyt {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+			grid-gap: 12px;
+		}
+	}
 }
 </style>

@@ -56,15 +56,14 @@ module.exports = {
 		'vue/require-v-for-key': 'warn',
 		'vue/no-unused-components': 'warn',
 		'vue/no-unused-vars': 'warn',
-		'vue/no-dupe-keys': 'warn',
 		'vue/valid-v-for': 'warn',
 		'vue/return-in-computed-property': 'warn',
 		'vue/no-setup-props-destructure': 'warn',
 		'vue/max-attributes-per-line': 'off',
 		'vue/html-self-closing': 'off',
 		'vue/singleline-html-element-content-newline': 'off',
-		'vue/v-on-event-hyphenation': ['error', 'never', { autofix: true }],
-		'vue/attribute-hyphenation': ['error', 'never'],
+		// (vue/vue3-recommended disabled the autofix for Vue 2 compatibility)
+		'vue/v-on-event-hyphenation': ['warn', 'always', { autofix: true }],
 	},
 	globals: {
 		// Node.js

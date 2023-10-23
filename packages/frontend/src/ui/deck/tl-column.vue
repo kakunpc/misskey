@@ -1,5 +1,5 @@
 <template>
-<XColumn :menu="menu" :column="column" :isStacked="isStacked">
+<XColumn :menu="menu" :column="column" :is-stacked="isStacked" @parent-focus="$event => emit('parent-focus', $event)">
 	<template #header>
 		<i v-if="column.tl === 'home'" class="ti ti-home"></i>
 		<i v-else-if="column.tl === 'local'" class="ti ti-planet"></i>
@@ -15,7 +15,7 @@
 		</p>
 		<p :class="$style.disabledDescription">{{ i18n.ts._disabledTimeline.description }}</p>
 	</div>
-	<MkTimeline v-else-if="column.tl" ref="timeline" :key="column.tl" :src="column.tl"/>
+	<MkTimeline v-else-if="column.tl" ref="timeline" :key="column.tl" :src="column.tl" @after="() => emit('loaded')"/>
 </XColumn>
 </template>
 
@@ -32,6 +32,11 @@ import { instance } from '@/instance';
 const props = defineProps<{
 	column: Column;
 	isStacked: boolean;
+}>();
+
+const emit = defineEmits<{
+	(ev: 'loaded'): void;
+	(ev: 'parent-focus', direction: 'up' | 'down' | 'left' | 'right'): void;
 }>();
 
 let disabled = $ref(false);

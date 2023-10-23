@@ -3,16 +3,16 @@
 	ref="dialog"
 	:width="400"
 	:height="450"
-	:withOkButton="true"
-	:okButtonDisabled="false"
-	:canClose="false"
+	:with-ok-button="true"
+	:ok-button-disabled="false"
+	:can-close="false"
 	@close="dialog.close()"
 	@closed="$emit('closed')"
 	@ok="ok()"
 >
 	<template #header>{{ title || i18n.ts.generateAccessToken }}</template>
 
-	<MkSpacer :marginMin="20" :marginMax="28">
+	<MkSpacer :margin-min="20" :margin-max="28">
 		<div class="_gaps_m">
 			<div v-if="information">
 				<MkInfo warn>{{ information }}</MkInfo>

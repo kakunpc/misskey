@@ -2,7 +2,7 @@
 <div class="_gaps">
 	<div style="text-align: center;">{{ i18n.ts._initialAccountSetting.followUsers }}</div>
 
-	<MkFolder :defaultOpen="true">
+	<MkFolder :default-open="true">
 		<template #label>{{ i18n.ts.recommended }}</template>
 
 		<MkPagination :pagination="pinnedUsers">
@@ -14,7 +14,7 @@
 		</MkPagination>
 	</MkFolder>
 
-	<MkFolder :defaultOpen="true">
+	<MkFolder :default-open="true">
 		<template #label>{{ i18n.ts.popularUsers }}</template>
 
 		<MkPagination :pagination="popularUsers">

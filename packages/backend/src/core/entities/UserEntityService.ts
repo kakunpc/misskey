@@ -466,6 +466,7 @@ export class UserEntityService implements OnModuleInit {
 				mutedInstances: profile!.mutedInstances,
 				mutingNotificationTypes: profile!.mutingNotificationTypes,
 				emailNotificationTypes: profile!.emailNotificationTypes,
+				showTimelineReplies: user.showTimelineReplies ?? falsy,
 				achievements: profile!.achievements,
 				loggedInDays: profile!.loggedInDates.length,
 				policies: this.roleService.getUserPolicies(user.id),

@@ -32,8 +32,6 @@ import type { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { MetaService } from '@/core/MetaService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
-import type { AccountMoveService } from '@/core/AccountMoveService.js';
-import { checkHttps } from '@/misc/check-https.js';
 import { getApId, getApType, getOneApHrefNullable, isActor, isCollection, isCollectionOrOrderedCollection, isPropertyValue } from '../type.js';
 import { extractApHashtags } from './tag.js';
 import type { OnModuleInit } from '@nestjs/common';
@@ -44,6 +42,8 @@ import type { ApLoggerService } from '../ApLoggerService.js';
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { ApImageService } from './ApImageService.js';
 import type { IActor, IObject } from '../type.js';
+import type { AccountMoveService } from '@/core/AccountMoveService.js';
+import { checkHttps } from '@/misc/check-https.js';
 
 const nameLength = 128;
 const summaryLength = 2048;
@@ -306,6 +306,7 @@ export class ApPersonService implements OnModuleInit {
 					tags,
 					isBot,
 					isCat: (person as any).isCat === true,
+					showTimelineReplies: false,
 				})) as RemoteUser;
 
 				await transactionalEntityManager.save(new UserProfile({
@@ -695,7 +696,7 @@ export class ApPersonService implements OnModuleInit {
 		if (!dst.alsoKnownAs || dst.alsoKnownAs.length === 0) {
 			return 'skip: dst.alsoKnownAs is empty';
 		}
-		if (!dst.alsoKnownAs.includes(src.uri)) {
+		if (!dst.alsoKnownAs?.includes(src.uri)) {
 			return 'skip: alsoKnownAs does not include from.uri';
 		}
 

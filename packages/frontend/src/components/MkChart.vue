@@ -1,8 +1,8 @@
 <template>
-<div :class="$style.root">
+<div class="cbbedffa">
 	<canvas ref="chartEl"></canvas>
 	<MkChartLegend ref="legendEl" style="margin-top: 8px;"/>
-	<div v-if="fetching" :class="$style.fetching">
+	<div v-if="fetching" class="fetching">
 		<MkLoading/>
 	</div>
 </div>
@@ -817,22 +817,22 @@ onMounted(() => {
 /* eslint-enable id-denylist */
 </script>
 
-<style lang="scss" module>
-.root {
+<style lang="scss" scoped>
+.cbbedffa {
 	position: relative;
-}
 
-.fetching {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	-webkit-backdrop-filter: var(--blur, blur(12px));
-	backdrop-filter: var(--blur, blur(12px));
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	cursor: wait;
+	> .fetching {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		-webkit-backdrop-filter: var(--blur, blur(12px));
+		backdrop-filter: var(--blur, blur(12px));
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: wait;
+	}
 }
 </style>

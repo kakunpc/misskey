@@ -2147,6 +2147,10 @@ export type Endpoints = {
             };
         };
     };
+    'users/stats': {
+        req: TODO;
+        res: TODO;
+    };
 };
 
 declare namespace entities {
@@ -2320,9 +2324,7 @@ type LiteInstanceMetadata = {
     themeColor: string | null;
     mascotImageUrl: string | null;
     bannerUrl: string | null;
-    serverErrorImageUrl: string | null;
-    infoImageUrl: string | null;
-    notFoundImageUrl: string | null;
+    errorImageUrl: string | null;
     iconUrl: string | null;
     backgroundImageUrl: string | null;
     logoImageUrl: string | null;
@@ -2604,10 +2606,6 @@ export class Stream extends EventEmitter<StreamEvents> {
     //
     // (undocumented)
     disconnectToChannel(connection: NonSharedConnection): void;
-    // (undocumented)
-    heartbeat(): void;
-    // (undocumented)
-    ping(): void;
     // Warning: (ae-forgotten-export) The symbol "SharedConnection" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
